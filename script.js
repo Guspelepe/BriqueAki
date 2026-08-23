@@ -286,7 +286,7 @@ async function registerUser() {
         totalGanho: 0,
         totalTaxas: 0
     });
-    showToast('✅ Conta criada com sucesso! Você ganhou 100 moedas de boas-vindas!');
+    showToast(' Conta criada com sucesso! Você ganhou 100 moedas de boas-vindas!');
     regNome.value = '';
     regCpf.value = '';
     regEmail.value = '';
@@ -370,7 +370,7 @@ async function carregarProdutos() {
         allProducts = await db.produtos.toArray();
         console.log(`📦 ${allProducts.length} produtos carregados.`);
         if (allProducts.length === 0) {
-            showToast('⚠️ Nenhum produto encontrado. Verifique o banco.');
+            showToast(' Nenhum produto encontrado. Verifique o banco.');
         }
         return allProducts;
     } catch (err) {
@@ -897,7 +897,7 @@ function coletarBonusDiario() {
     db.usuarios.update(currentUser.id, currentUser);
     atualizarMoedas();
     verificarBonusDiario();
-    showToast(`🎉 Você ganhou ${bonus} moedas no bônus diário!`);
+    showToast(` Você ganhou ${bonus} moedas no bônus diário!`);
 }
 
 function girarSlot() {
@@ -1158,7 +1158,7 @@ async function renderChats() {
 
     } catch (error) {
         console.error('Erro ao carregar chats:', error);
-        container.innerHTML = `<div class="error-msg">❌ Erro ao carregar conversas.</div>`;
+        container.innerHTML = `<div class="error-msg"> Erro ao carregar conversas.</div>`;
     }
 }
 
