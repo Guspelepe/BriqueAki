@@ -1,11 +1,11 @@
-// db.js - Configuração do Dexie (IndexedDB)
+
+// db.js - Configuração do Dexie (IndexedDB) com imagens
 import Dexie from 'dexie';
 
-// Criação do banco de dados
 const db = new Dexie('TrocaTudoDB');
 
-// Definição das tabelas
-db.version(1).stores({
+// Versão 3 para incluir imagens (força recriação)
+db.version(3).stores({
     usuarios: '++id, email, cpf, nome',
     produtos: '++id, titulo, categoria, status, dono, precoMoedas',
     trocas: '++id, produtoId, solicitante, dono, status',
@@ -14,18 +14,26 @@ db.version(1).stores({
     adminFees: '++id'
 });
 
-// ============================================================
-// FUNÇÃO DE POPULAÇÃO (reutilizável)
-// ============================================================
+// Função para gerar nome do arquivo a partir do título
+function gerarCaminhoImagem(titulo) {
+    // Remove acentos e caracteres especiais, substitui espaços por _
+    const nome = titulo
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // remove acentos
+        .replace(/[^a-zA-Z0-9 ]/g, '')    // remove caracteres especiais
+        .replace(/\s+/g, '_')             // espaços -> _
+        .toLowerCase();
+    return `src/${nome}.jpg`;
+}
+
 async function popularBanco() {
-    // Verificar se já existem produtos
     const count = await db.produtos.count();
     if (count > 0) {
-        console.log('Banco já populado. Ignorando inserção.');
+        console.log(`Banco já populado com ${count} produtos. Ignorando inserção.`);
         return;
     }
 
-    console.log('Populando banco com dados iniciais...');
+    console.log('Populando banco com dados iniciais e imagens...');
 
     // --- Usuários ---
     await db.usuarios.bulkAdd([
@@ -58,7 +66,7 @@ async function popularBanco() {
     ]);
 
     // --- Produtos (todas as categorias) ---
-    await db.produtos.bulkAdd([
+    const produtos = [
         // ========== ELETRÔNICOS ==========
         { titulo: 'Fone Bluetooth', descricao: 'Fone com cancelamento de ruído, bateria dura 4h.', categoria: 'Eletrônicos', local: 'São Paulo/SP', dono: 'demo@trocatudo.com', fotos: [], trocaDesejada: 'Smartwatch ou jogos de PS4', status: 'disponivel', condicao: 'seminovo', precoMoedas: 120, data: new Date().toISOString(), vendido: false },
         { titulo: 'Teclado Mecânico Switch Blue', descricao: 'Teclado com LED RGB, ótimo para digitação e jogos.', categoria: 'Eletrônicos', local: 'Rio de Janeiro/RJ', dono: 'joao.v@email.com', fotos: [], trocaDesejada: 'Mouse gamer sem fio', status: 'disponivel', condicao: 'usado', precoMoedas: 150, data: new Date().toISOString(), vendido: false },
@@ -178,21 +186,26 @@ async function popularBanco() {
         { titulo: 'Bolsa Transversal Esportiva', descricao: 'Pochete/shoulder bag para guardar celular e chaves.', categoria: 'Acessórios', local: 'Brasília/DF', dono: 'demo@trocatudo.com', fotos: [], trocaDesejada: 'Garrafa térmica pequena', status: 'disponivel', condicao: 'seminovo', precoMoedas: 40, data: new Date().toISOString(), vendido: false },
         { titulo: 'Cinto Reversível Preto/Marrom', descricao: 'Fivela giratória, tamanho 100cm.', categoria: 'Acessórios', local: 'Fortaleza/CE', dono: 'maria.s@email.com', fotos: [], trocaDesejada: 'Gravata ou suspensório', status: 'disponivel', condicao: 'novo', precoMoedas: 50, data: new Date().toISOString(), vendido: false },
         { titulo: 'Guarda-chuva Reforçado', descricao: 'Tamanho grande (portaria), estrutura dupla de vento.', categoria: 'Acessórios', local: 'Manaus/AM', dono: 'pedro@email.com', fotos: [], trocaDesejada: 'Capa de chuva impermeável', status: 'disponivel', condicao: 'seminovo', precoMoedas: 60, data: new Date().toISOString(), vendido: false }
-    ]);
+    ];
 
+    console.log('✅ Banco populado com sucesso!');
+    // Criar array completo com fotos
+    const produtosComFotos = produtos.map(p => ({
+        ...p,
+        fotos: [gerarCaminhoImagem(p.titulo)],
+        data: new Date().toISOString(),
+        vendido: false
+    }));
+
+    await db.produtos.bulkAdd(produtosComFotos);
     console.log('✅ Banco populado com sucesso!');
 }
 
-// ============================================================
-// INICIALIZAÇÃO: abre o banco e popula se necessário
-// ============================================================
 db.open()
     .then(async () => {
         console.log('📀 Banco de dados conectado.');
         await popularBanco();
     })
-    .catch(err => {
-        console.error('❌ Erro ao abrir banco:', err);
-    });
+    .catch(err => console.error('❌ Erro ao abrir banco:', err));
 
 export default db;
