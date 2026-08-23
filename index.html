@@ -29,8 +29,8 @@
                     <button class="btn btn-logout" id="btnLogout">Sair</button>
                 </div>
                 <div class="user-info" id="userInfoLoggedOut">
-                    <button class="btn btn-login" id="btnLoginHeader">Entrar</button>
-                    <button class="btn btn-register" id="btnRegisterHeader">Cadastrar</button>
+                    <button class="btn btn-login" onclick="abrirAuthModal('login')">Entrar</button>
+                    <button class="btn btn-register" onclick="abrirAuthModal('register')">Cadastrar</button>
                 </div>
             </div>
 
@@ -55,65 +55,59 @@
 
     <!-- ===== CONTEÚDO PRINCIPAL (centralizado) ===== -->
     <div class="container">
-        <!-- MODAL DE LOGIN -->
+        <!-- ===== MODAL DE LOGIN / CADASTRO ===== -->
         <div class="auth-container hidden" id="authModal">
+            <!-- TELA DE LOGIN -->
             <div class="auth-box" id="loginBox">
-                <button class="modal-close" id="closeAuthModal">✕</button>
-                <h2>Entrar</h2>
-                <p class="subtitle">Acesse sua conta para trocar produtos</p>
-                <div class="demo-account">
-                    <p>🎮 Conta Demo disponível!</p>
-                    <div class="demo-credentials">
-                        <strong>Email:</strong> demo@trocatudo.com<br />
-                        <strong>Senha:</strong> 123456
-                    </div>
-                </div>
+                <button class="modal-close" onclick="fecharAuthModal()">✕</button>
+                <h2>Digite seu e-mail ou telefone para iniciar sessão</h2>
                 <div id="loginError" class="error-msg">❌ Credenciais inválidas</div>
                 <div class="form-group">
-                    <label>E-mail ou CPF</label>
-                    <input type="text" id="loginEmail" placeholder="seu@email.com ou CPF" value="demo@trocatudo.com" />
+                    <label>E-mail ou telefone</label>
+                    <input type="text" id="loginEmail" placeholder="seu@email.com" value="demo@trocatudo.com" />
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
                     <input type="password" id="loginSenha" placeholder="••••••••" value="123456" />
                 </div>
-                <button class="btn-primary" id="btnLogin">Entrar</button>
+                <button class="btn-primary" id="btnLogin">Continuar</button>
                 <div class="switch-link">
-                    Não tem conta? <a id="showRegister">Criar conta</a>
+                    <a onclick="abrirAuthModal('register')">Criar conta</a>
                 </div>
                 <div style="margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0; text-align:center; font-size:0.8rem; color:#94a3b8;">
                     Admin: adm@adm.com / 123456
                 </div>
             </div>
 
-            <div class="auth-box hidden" id="registerBox">
-                <button class="modal-close" id="closeAuthModal2">✕</button>
-                <h2>Criar conta</h2>
-                <p class="subtitle">Preencha seus dados para começar</p>
+            <!-- TELA DE CADASTRO (com tamanho reduzido) -->
+            <div class="auth-box hidden" id="registerBox" style="padding: 25px 30px;">
+                <button class="modal-close" onclick="fecharAuthModal()">✕</button>
+                <h2 style="font-size: 1.3rem; margin-bottom: 5px;">Criar conta</h2>
+                <p class="subtitle" style="margin-bottom: 15px; font-size: 0.85rem;">Preencha seus dados para começar</p>
                 <div id="registerError" class="error-msg">❌ Preencha todos os campos corretamente</div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>Nome completo *</label>
-                    <input type="text" id="regNome" placeholder="Maria Silva" />
+                    <input type="text" id="regNome" placeholder="Maria Silva" style="padding: 10px 12px;" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>CPF *</label>
-                    <input type="text" id="regCpf" placeholder="123.456.789-00" maxlength="14" />
+                    <input type="text" id="regCpf" placeholder="123.456.789-00" maxlength="14" style="padding: 10px 12px;" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>E-mail *</label>
-                    <input type="email" id="regEmail" placeholder="maria@email.com" />
+                    <input type="email" id="regEmail" placeholder="maria@email.com" style="padding: 10px 12px;" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>Telefone *</label>
-                    <input type="text" id="regTelefone" placeholder="(11) 98765-4321" />
+                    <input type="text" id="regTelefone" placeholder="(11) 98765-4321" style="padding: 10px 12px;" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>Cidade *</label>
-                    <input type="text" id="regCidade" placeholder="São Paulo" />
+                    <input type="text" id="regCidade" placeholder="São Paulo" style="padding: 10px 12px;" />
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>Estado *</label>
-                    <select id="regEstado">
+                    <select id="regEstado" style="padding: 10px 12px;">
                         <option value="">Selecione</option>
                         <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
                         <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
@@ -126,13 +120,13 @@
                         <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label>Senha *</label>
-                    <input type="password" id="regSenha" placeholder="Min. 6 caracteres" />
+                    <input type="password" id="regSenha" placeholder="Min. 6 caracteres" style="padding: 10px 12px;" />
                 </div>
-                <button class="btn-primary" id="btnRegister">Criar conta</button>
-                <div class="switch-link">
-                    Já tem conta? <a id="showLogin">Fazer login</a>
+                <button class="btn-primary" id="btnRegister" style="padding: 12px; font-size: 0.95rem;">Criar conta</button>
+                <div class="switch-link" style="margin-top: 12px; font-size: 0.85rem;">
+                    <a onclick="abrirAuthModal('login')">Já tem conta? Fazer login</a>
                 </div>
             </div>
         </div>

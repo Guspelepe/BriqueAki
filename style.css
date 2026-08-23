@@ -1151,3 +1151,134 @@ header {
         grid-template-columns: 1fr 1fr;
     }
 }
+/* ============================================================
+   MODAL DE LOGIN / CADASTRO (corrigido e compacto)
+   ============================================================ */
+.auth-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+.auth-container.active {
+    display: flex !important;
+}
+.auth-container.hidden {
+    display: none !important;
+}
+.auth-box {
+    background: white;
+    border-radius: var(--radius, 20px);
+    padding: 35px 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    position: relative;
+}
+.auth-box .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.auth-box .modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.auth-box h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark, #0f172a);
+}
+.auth-box .subtitle {
+    color: var(--text-muted, #64748b);
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+.auth-box .form-group {
+    margin-bottom: 14px;
+}
+.auth-box label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+}
+.auth-box input, .auth-box select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius-sm, 12px);
+    font-size: 0.95rem;
+    transition: 0.2s;
+    background: #fafbfc;
+}
+.auth-box input:focus, .auth-box select:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    background: white;
+}
+.auth-box .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm, 12px);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 5px;
+}
+.auth-box .btn-primary:hover {
+    background: #2563eb;
+}
+.auth-box .switch-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+.auth-box .switch-link a {
+    color: #3b82f6;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+.auth-box .switch-link a:hover {
+    text-decoration: underline;
+}
+.error-msg {
+    color: #ef4444;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    display: none;
+}
+.error-msg.show {
+    display: block;
+}
+.hidden {
+    display: none !important;
+}

@@ -76,32 +76,8 @@ const btnPublicar = document.getElementById('btnPublicar');
 const toastEl = document.getElementById('toast');
 
 // ============================================================
-// FUNÇÕES PARA GERAR CAMINHO DA IMAGEM
-// ============================================================
-
-function getCaminhoImagem(titulo) {
-    if (!titulo) return null;
-    // Codifica caracteres especiais para URL (espaços, acentos, etc.)
-    return `src/${encodeURIComponent(titulo)}.jpg`;
-}
-
-function gerarImagemHtml(produto, classe = 'product-image') {
-    if (!produto || !produto.titulo) {
-        return `<div class="no-image">📷 Sem foto</div>`;
-    }
-    const caminho = getCaminhoImagem(produto.titulo);
-    const titulo = escapeHtml(produto.titulo);
-    return `
-        <img src="${caminho}" alt="${titulo}" class="${classe}" 
-             onerror="this.style.display='none'; this.parentElement.querySelector('.no-image').style.display='flex';" />
-        <div class="no-image" style="display:none;">📷 Sem foto</div>
-    `;
-}
-
-// ============================================================
 // FUNÇÕES AUXILIARES
 // ============================================================
-
 function showToast(msg) {
     if (!toastEl) return;
     toastEl.textContent = msg;
@@ -163,6 +139,27 @@ function getCondicaoLabel(condicao) {
     return labels[condicao] || 'Usado';
 }
 
+// ============================================================
+// FUNÇÕES PARA GERAR CAMINHO DA IMAGEM
+// ============================================================
+function getCaminhoImagem(titulo) {
+    if (!titulo) return null;
+    return `src/${encodeURIComponent(titulo)}.jpg`;
+}
+
+function gerarImagemHtml(produto, classe = 'product-image') {
+    if (!produto || !produto.titulo) {
+        return `<div class="no-image">📷 Sem foto</div>`;
+    }
+    const caminho = getCaminhoImagem(produto.titulo);
+    const titulo = escapeHtml(produto.titulo);
+    return `
+        <img src="${caminho}" alt="${titulo}" class="${classe}" 
+             onerror="this.style.display='none'; this.parentElement.querySelector('.no-image').style.display='flex';" />
+        <div class="no-image" style="display:none;">📷 Sem foto</div>
+    `;
+}
+
 // ===== CATEGORIAS COM EMOJIS =====
 const categoriasMap = {
     'Eletrônicos': { emoji: '📱', label: 'Eletrônicos' },
@@ -210,7 +207,6 @@ function renderCategories() {
 // ============================================================
 // AUTENTICAÇÃO
 // ============================================================
-
 async function loginUser(email, senha) {
     if (!loginError) return;
     loginError.classList.remove('show');
@@ -363,7 +359,6 @@ function atualizarBadge() {
 // ============================================================
 // CARREGAR PRODUTOS
 // ============================================================
-
 async function carregarProdutos() {
     try {
         allProducts = await db.produtos.toArray();
@@ -391,7 +386,6 @@ function ordenarProdutos(produtos) {
 // ============================================================
 // RENDERIZAR ANÚNCIOS (COM IMAGENS)
 // ============================================================
-
 function renderizarAnuncios() {
     if (!listaEl) return;
     let produtos = [...allProducts];
@@ -431,16 +425,16 @@ function renderizarAnuncios() {
     listaEl.innerHTML = produtos.map(p => {
         const isOwner = currentUser && (p.dono === currentUser.email);
         const podeExcluir = isOwner || (currentUser && currentUser.isAdmin);
+        const fotoHtml = gerarImagemHtml(p);
         const statusLabel = getStatusLabel(p.status);
         const statusClass = getStatusClass(p.status);
         const condicaoLabel = getCondicaoLabel(p.condicao);
         const condicaoClass = getCondicaoClass(p.condicao);
         const catEmoji = categoriasMap[p.categoria]?.emoji || '📦';
-        const imagemHtml = gerarImagemHtml(p);
         
         return `
             <div class="card" onclick="abrirModalProduto(${p.id})">
-                ${imagemHtml}
+                ${fotoHtml}
                 <span class="status-badge ${statusClass}">${statusLabel}</span>
                 <span class="condition-badge ${condicaoClass}">${condicaoLabel}</span>
                 <span class="category-tag">${catEmoji} ${escapeHtml(p.categoria || 'Outros')}</span>
@@ -465,9 +459,8 @@ function renderizarAnuncios() {
 }
 
 // ============================================================
-// RENDERIZAR MEUS ANÚNCIOS (COM IMAGENS)
+// RENDERIZAR MEUS ANÚNCIOS
 // ============================================================
-
 function renderMeusAnuncios() {
     if (!meusAnunciosEl) return;
     if (!currentUser) {
@@ -485,15 +478,15 @@ function renderMeusAnuncios() {
         return;
     }
     meusAnunciosEl.innerHTML = meus.map(p => {
+        const fotoHtml = gerarImagemHtml(p);
         const statusLabel = getStatusLabel(p.status);
         const statusClass = getStatusClass(p.status);
         const condicaoLabel = getCondicaoLabel(p.condicao);
         const condicaoClass = getCondicaoClass(p.condicao);
         const catEmoji = categoriasMap[p.categoria]?.emoji || '📦';
-        const imagemHtml = gerarImagemHtml(p);
         return `
             <div class="card" onclick="abrirModalProduto(${p.id})">
-                ${imagemHtml}
+                ${fotoHtml}
                 <span class="status-badge ${statusClass}">${statusLabel}</span>
                 <span class="condition-badge ${condicaoClass}">${condicaoLabel}</span>
                 <span class="category-tag">${catEmoji} ${escapeHtml(p.categoria || 'Outros')}</span>
@@ -513,7 +506,6 @@ function renderMeusAnuncios() {
 // ============================================================
 // ADMIN
 // ============================================================
-
 function renderAdminPanel() {
     if (!currentUser || !currentUser.isAdmin) {
         const tabAdmin = document.getElementById('tabAdmin');
@@ -531,7 +523,6 @@ function renderAdminPanel() {
         const totalCoins = users.reduce((acc, u) => acc + (u.moedas || 0), 0);
         document.getElementById('adminTotalCoins').textContent = totalCoins;
     });
-    // Admin fees (simplificado)
     db.adminFees.toArray().then(fees => {
         const totalFees = fees.reduce((acc, f) => acc + (f.valor || 0), 0);
         document.getElementById('adminTotalFees').textContent = totalFees;
@@ -555,7 +546,6 @@ function renderAdminPanel() {
 // ============================================================
 // AVALIAÇÃO DE PREÇO
 // ============================================================
-
 function calcularAvaliacaoPreco() {
     const produtos = allProducts.filter(p => p.status !== 'vendido');
     const condicoes = ['novo', 'lacrado', 'seminovo', 'usado', 'ruim'];
@@ -587,7 +577,6 @@ function calcularAvaliacaoPreco() {
         `;
     }).join('');
 
-    // Avaliação por categoria
     const categorias = [...new Set(produtos.map(p => p.categoria))];
     const catGrid = document.getElementById('categoryEvaluationGrid');
     if (!catGrid) return;
@@ -612,7 +601,6 @@ function calcularAvaliacaoPreco() {
 // ============================================================
 // FUNÇÕES DE INTERAÇÃO (Troca, Compra, Chat, etc.)
 // ============================================================
-
 window.solicitarTroca = function(id) {
     if (!currentUser) {
         showToast('Faça login para solicitar troca.');
@@ -695,52 +683,8 @@ window.responderTroca = function(notifId, resposta) {
 };
 
 window.abrirModalProduto = function(id) {
-    const produto = allProducts.find(p => p.id === id);
-    if (!produto) return;
-    const modal = document.getElementById('productModal');
-    const body = document.getElementById('modalBody');
-    if (!modal || !body) return;
-    
-    const isOwner = currentUser && (produto.dono === currentUser.email);
-    const podeExcluir = isOwner || (currentUser && currentUser.isAdmin);
-    const statusLabel = getStatusLabel(produto.status);
-    const statusClass = getStatusClass(produto.status);
-    const condicaoLabel = getCondicaoLabel(produto.condicao);
-    const condicaoClass = getCondicaoClass(produto.condicao);
-    const imagemHtml = gerarImagemHtml(produto, 'product-image-full');
-    
-    body.innerHTML = `
-        ${imagemHtml}
-        <h2>${escapeHtml(produto.titulo)}</h2>
-        <span class="status-badge ${statusClass}">${statusLabel}</span>
-        <span class="condition-badge ${condicaoClass}" style="margin-left:10px;">${condicaoLabel}</span>
-        <div style="font-size:1.2rem;font-weight:700;color:#facc15;background:#0f172a;padding:4px 16px;border-radius:20px;display:inline-block;margin:10px 0;">
-            🪙 ${produto.precoMoedas}
-        </div>
-        <div class="product-detail">
-            <div class="label">Anunciante</div>
-            <div class="value">${escapeHtml(produto.dono)}</div>
-            <div class="label">Local</div>
-            <div class="value">${escapeHtml(produto.local || 'Não informado')}</div>
-            <div class="label">Descrição</div>
-            <div class="value" style="white-space:pre-wrap;">${escapeHtml(produto.descricao)}</div>
-            ${produto.trocaDesejada ? `<div class="label">Quer em troca</div><div class="value">${escapeHtml(produto.trocaDesejada)}</div>` : ''}
-            <div class="label">Anunciado em</div>
-            <div class="value">${new Date(produto.data).toLocaleDateString('pt-BR')}</div>
-        </div>
-        <div class="actions-modal">
-            ${!isOwner && currentUser && produto.status !== 'vendido' ? `
-                <button class="btn-trocar" onclick="solicitarTroca(${produto.id});fecharModal();">Troca</button>
-                <button class="btn-coin" onclick="comprarComMoedas(${produto.id});fecharModal();">🪙 Comprar (${produto.precoMoedas})</button>
-            ` : ''}
-            ${podeExcluir ? `<button class="btn-excluir" onclick="excluirAnuncio(${produto.id});fecharModal();">Excluir</button>` : ''}
-            ${!currentUser ? `<span style="color:#94a3b8;">Faça login para interagir</span>` : ''}
-            ${currentUser ? `<button class="btn-chat" onclick="abrirChat(${produto.id}, '${produto.dono}');fecharModal();">Chat</button>` : ''}
-        </div>
-    `;
-    modal.classList.add('active');
+    window.location.href = `produto.html?id=${id}`;
 };
-
 window.fecharModal = function() {
     const modal = document.getElementById('productModal');
     if (modal) modal.classList.remove('active');
@@ -872,7 +816,6 @@ window.comprarComMoedas = function(id) {
         return;
     }
     if (!confirm(`Confirmar compra de "${produto.titulo}" por ${preco} moedas?\nTaxa: ${taxa} moedas (15%)\nVendedor recebe: ${valorFinal} moedas`)) return;
-    // Processar compra
     currentUser.moedas -= preco;
     db.usuarios.update(currentUser.id, currentUser);
     db.usuarios.where('email').equals(produto.dono).first().then(vendedor => {
@@ -882,11 +825,8 @@ window.comprarComMoedas = function(id) {
             vendedor.totalTaxas = (vendedor.totalTaxas || 0) + taxa;
             db.usuarios.update(vendedor.id, vendedor);
         }
-        // Registrar taxa
         db.adminFees.add({ valor: taxa, data: new Date().toISOString() });
-        // Atualizar produto
         db.produtos.update(id, { status: 'vendido', vendido: true });
-        // Notificar vendedor
         db.notificacoes.add({
             para: produto.dono,
             de: currentUser.email,
@@ -911,70 +851,8 @@ window.comprarComMoedas = function(id) {
 };
 
 // ============================================================
-// NOTIFICAÇÕES
-// ============================================================
-
-function renderNotificacoes() {
-    if (!notificationsList || !currentUser) return;
-    db.notificacoes.where('para').equals(currentUser.email).toArray().then(notifs => {
-        if (notifs.length === 0) {
-            notificationsList.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">📭 Nenhuma notificação</div>';
-            return;
-        }
-        notificationsList.innerHTML = notifs.sort((a, b) => new Date(b.data) - new Date(a.data)).map(n => {
-            const data = new Date(n.data).toLocaleDateString('pt-BR');
-            const hora = new Date(n.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            let botoes = '';
-            if (n.tipo === 'solicitacao' && !n.lida) {
-                botoes = `
-                    <button class="btn-aceitar" onclick="responderTroca(${n.id}, 'aceitar')">Aceitar</button>
-                    <button class="btn-recusar" onclick="responderTroca(${n.id}, 'recusar')">Recusar</button>
-                `;
-            }
-            if (n.tipo === 'chat' && !n.lida) {
-                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Responder</button>`;
-            }
-            if (n.tipo === 'resposta' && !n.lida) {
-                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Abrir Chat</button>`;
-            }
-            if (n.tipo === 'compra' && !n.lida) {
-                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Chat</button>`;
-            }
-            return `
-                <div class="notification-item" style="${n.lida ? 'opacity:0.6;' : ''}">
-                    <div class="notif-text">
-                        <strong>${escapeHtml(n.de)}</strong><br />
-                        ${escapeHtml(n.mensagem)}
-                    </div>
-                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;">
-                        <span class="notif-date">${data} ${hora}</span>
-                        ${botoes}
-                    </div>
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-function toggleNotifications() {
-    if (!currentUser) {
-        showToast('Faça login para ver notificações.');
-        return;
-    }
-    if (!notificationsPanel) return;
-    notificationsPanel.classList.toggle('active');
-    if (notificationsPanel.classList.contains('active')) {
-        renderNotificacoes();
-        db.notificacoes.where('para').equals(currentUser.email).modify({ lida: true }).then(() => {
-            atualizarBadge();
-        });
-    }
-}
-
-// ============================================================
 // GAMES
 // ============================================================
-
 const slotEmojis = ['🍒', '🍋', '🍊', '🍉', '🍇', '⭐', '💎', '7️⃣'];
 let slotSpinning = false;
 
@@ -1078,9 +956,68 @@ function girarSlot() {
 }
 
 // ============================================================
+// NOTIFICAÇÕES
+// ============================================================
+function renderNotificacoes() {
+    if (!notificationsList || !currentUser) return;
+    db.notificacoes.where('para').equals(currentUser.email).toArray().then(notifs => {
+        if (notifs.length === 0) {
+            notificationsList.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">📭 Nenhuma notificação</div>';
+            return;
+        }
+        notificationsList.innerHTML = notifs.sort((a, b) => new Date(b.data) - new Date(a.data)).map(n => {
+            const data = new Date(n.data).toLocaleDateString('pt-BR');
+            const hora = new Date(n.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            let botoes = '';
+            if (n.tipo === 'solicitacao' && !n.lida) {
+                botoes = `
+                    <button class="btn-aceitar" onclick="responderTroca(${n.id}, 'aceitar')">Aceitar</button>
+                    <button class="btn-recusar" onclick="responderTroca(${n.id}, 'recusar')">Recusar</button>
+                `;
+            }
+            if (n.tipo === 'chat' && !n.lida) {
+                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Responder</button>`;
+            }
+            if (n.tipo === 'resposta' && !n.lida) {
+                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Abrir Chat</button>`;
+            }
+            if (n.tipo === 'compra' && !n.lida) {
+                botoes = `<button class="btn-chat-notif" onclick="abrirChat(${n.produtoId}, '${n.de}')">Chat</button>`;
+            }
+            return `
+                <div class="notification-item" style="${n.lida ? 'opacity:0.6;' : ''}">
+                    <div class="notif-text">
+                        <strong>${escapeHtml(n.de)}</strong><br />
+                        ${escapeHtml(n.mensagem)}
+                    </div>
+                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;">
+                        <span class="notif-date">${data} ${hora}</span>
+                        ${botoes}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+function toggleNotifications() {
+    if (!currentUser) {
+        showToast('Faça login para ver notificações.');
+        return;
+    }
+    if (!notificationsPanel) return;
+    notificationsPanel.classList.toggle('active');
+    if (notificationsPanel.classList.contains('active')) {
+        renderNotificacoes();
+        db.notificacoes.where('para').equals(currentUser.email).modify({ lida: true }).then(() => {
+            atualizarBadge();
+        });
+    }
+}
+
+// ============================================================
 // PUBLICAR ANÚNCIO
 // ============================================================
-
 function publicarAnuncio() {
     if (!currentUser) {
         showToast('Você precisa estar logado para publicar.');
@@ -1154,7 +1091,6 @@ function salvarProduto(titulo, descricao, categoria, local, troca, fotos, preco,
 // ============================================================
 // TABS
 // ============================================================
-
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const tabId = this.dataset.tab;
@@ -1174,41 +1110,23 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ============================================================
-// EVENTOS
+// CONTROLE DO MODAL DE LOGIN (consolidado)
 // ============================================================
-
-function initEventListeners() {
-    if (btnLogin) btnLogin.addEventListener('click', () => loginUser(loginEmail.value.trim(), loginSenha.value));
-    if (loginEmail) loginEmail.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnLogin?.click(); });
-    if (loginSenha) loginSenha.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnLogin?.click(); });
-    if (btnRegister) btnRegister.addEventListener('click', registerUser);
-    if (showRegister) showRegister.addEventListener('click', showRegisterBox);
-    if (showLogin) showLogin.addEventListener('click', showLoginBox);
-    if (btnLogout) btnLogout.addEventListener('click', logoutUser);
-    if (btnPublicar) btnPublicar.addEventListener('click', publicarAnuncio);
-    if (btnLoginHeader) btnLoginHeader.addEventListener('click', () => abrirAuthModal('login'));
-    if (btnRegisterHeader) btnRegisterHeader.addEventListener('click', () => abrirAuthModal('register'));
-    if (closeAuthModal) closeAuthModal.addEventListener('click', fecharAuthModal);
-    if (closeAuthModal2) closeAuthModal2.addEventListener('click', fecharAuthModal);
-    if (authModal) authModal.addEventListener('click', (e) => { if (e.target === authModal) fecharAuthModal(); });
-    if (btnNotifications) btnNotifications.addEventListener('click', toggleNotifications);
-    if (btnSearch) btnSearch.addEventListener('click', renderizarAnuncios);
-    if (searchText) searchText.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderizarAnuncios(); });
-    if (searchCidade) searchCidade.addEventListener('keypress', (e) => { if (e.key === 'Enter') renderizarAnuncios(); });
-    if (searchEstado) searchEstado.addEventListener('change', renderizarAnuncios);
-    if (btnGirar) btnGirar.addEventListener('click', girarSlot);
-    if (btnDailyBonus) btnDailyBonus.addEventListener('click', coletarBonusDiario);
-}
-
 function abrirAuthModal(tipo) {
-    if (!authModal) return;
+    console.log('🔓 abrirAuthModal chamado com tipo:', tipo);
+    if (!authModal) {
+        console.error('❌ Elemento #authModal não encontrado no DOM!');
+        return;
+    }
     authModal.classList.add('active');
     if (tipo === 'login') {
         if (loginBox) loginBox.classList.remove('hidden');
         if (registerBox) registerBox.classList.add('hidden');
-    } else {
+        console.log('✅ Exibindo tela de login');
+    } else if (tipo === 'register') {
         if (loginBox) loginBox.classList.add('hidden');
         if (registerBox) registerBox.classList.remove('hidden');
+        console.log('✅ Exibindo tela de cadastro');
     }
     if (loginError) loginError.classList.remove('show');
     if (registerError) registerError.classList.remove('show');
@@ -1216,6 +1134,7 @@ function abrirAuthModal(tipo) {
 
 function fecharAuthModal() {
     if (authModal) authModal.classList.remove('active');
+    console.log('🔒 Modal fechado');
 }
 
 function showLoginBox() {
@@ -1231,9 +1150,188 @@ function showRegisterBox() {
 }
 
 // ============================================================
+// EXPOR FUNÇÕES PARA O HTML (onclick) - SOLUÇÃO DEFINITIVA
+// ============================================================
+window.abrirAuthModal = function(tipo) {
+    console.log('🔓 abrirAuthModal chamado via onclick, tipo:', tipo);
+    const modal = document.getElementById('authModal');
+    if (!modal) {
+        console.error('❌ Elemento #authModal não encontrado!');
+        return;
+    }
+    // Remove 'hidden' e adiciona 'active' para exibir
+    modal.classList.remove('hidden');
+    modal.classList.add('active');
+    
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+    if (tipo === 'login') {
+        if (loginBox) loginBox.classList.remove('hidden');
+        if (registerBox) registerBox.classList.add('hidden');
+        console.log('✅ Exibindo tela de login');
+    } else if (tipo === 'register') {
+        if (loginBox) loginBox.classList.add('hidden');
+        if (registerBox) registerBox.classList.remove('hidden');
+        console.log('✅ Exibindo tela de cadastro');
+    }
+    // Limpar erros
+    const loginError = document.getElementById('loginError');
+    const registerError = document.getElementById('registerError');
+    if (loginError) loginError.classList.remove('show');
+    if (registerError) registerError.classList.remove('show');
+};
+
+window.fecharAuthModal = function() {
+    const modal = document.getElementById('authModal');
+    if (!modal) return;
+    // Remove 'active' e adiciona 'hidden' para ocultar
+    modal.classList.remove('active');
+    modal.classList.add('hidden');
+    console.log('🔒 Modal fechado');
+};
+
+// Garantir que o botão "Continuar" também funcione
+document.addEventListener('DOMContentLoaded', function() {
+    const btnLogin = document.getElementById('btnLogin');
+    if (btnLogin) {
+        btnLogin.addEventListener('click', function() {
+            const email = document.getElementById('loginEmail')?.value || '';
+            const senha = document.getElementById('loginSenha')?.value || '';
+            loginUser(email, senha);
+        });
+    }
+    const btnRegister = document.getElementById('btnRegister');
+    if (btnRegister) {
+        btnRegister.addEventListener('click', function() {
+            registerUser();
+        });
+    }
+});
+
+
+
+// ============================================================
+// EVENTOS
+// ============================================================
+function initEventListeners() {
+    console.log('⚡ Inicializando event listeners...');
+
+    // Botões do header
+    if (btnLoginHeader) {
+        btnLoginHeader.addEventListener('click', () => {
+            console.log('👆 Clique em "Entrar"');
+            abrirAuthModal('login');
+        });
+    } else {
+        console.warn('⚠️ btnLoginHeader não encontrado!');
+    }
+
+    if (btnRegisterHeader) {
+        btnRegisterHeader.addEventListener('click', () => {
+            console.log('👆 Clique em "Cadastrar"');
+            abrirAuthModal('register');
+        });
+    } else {
+        console.warn('⚠️ btnRegisterHeader não encontrado!');
+    }
+
+    // Botões do modal
+    if (btnLogin) {
+        btnLogin.addEventListener('click', () => {
+            console.log('👆 Clique em "Continuar" (login)');
+            loginUser(loginEmail.value.trim(), loginSenha.value);
+        });
+    } else {
+        console.warn('⚠️ btnLogin não encontrado!');
+    }
+
+    if (btnRegister) {
+        btnRegister.addEventListener('click', () => {
+            console.log('👆 Clique em "Criar conta"');
+            registerUser();
+        });
+    } else {
+        console.warn('⚠️ btnRegister não encontrado!');
+    }
+
+    if (closeAuthModal) {
+        closeAuthModal.addEventListener('click', fecharAuthModal);
+    }
+    if (closeAuthModal2) {
+        closeAuthModal2.addEventListener('click', fecharAuthModal);
+    }
+    if (authModal) {
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) fecharAuthModal();
+        });
+    }
+
+    if (showRegister) {
+        showRegister.addEventListener('click', () => {
+            console.log('👆 Clique em "Criar conta" (link)');
+            abrirAuthModal('register');
+        });
+    }
+    if (showLogin) {
+        showLogin.addEventListener('click', () => {
+            console.log('👆 Clique em "Fazer login" (link)');
+            abrirAuthModal('login');
+        });
+    }
+
+    // Logout
+    if (btnLogout) {
+        btnLogout.addEventListener('click', logoutUser);
+    }
+
+    // Publicar anúncio
+    if (btnPublicar) {
+        btnPublicar.addEventListener('click', publicarAnuncio);
+    }
+
+    // Notificações
+    if (btnNotifications) {
+        btnNotifications.addEventListener('click', toggleNotifications);
+    }
+
+    // Busca
+    if (btnSearch) {
+        btnSearch.addEventListener('click', renderizarAnuncios);
+    }
+    if (searchText) {
+        searchText.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') renderizarAnuncios();
+        });
+    }
+    if (searchCidade) {
+        searchCidade.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') renderizarAnuncios();
+        });
+    }
+    if (searchEstado) {
+        searchEstado.addEventListener('change', renderizarAnuncios);
+    }
+
+    // Games
+    if (btnGirar) {
+        btnGirar.addEventListener('click', girarSlot);
+    }
+    if (btnDailyBonus) {
+        btnDailyBonus.addEventListener('click', coletarBonusDiario);
+    }
+
+    // Botão Google (placeholder)
+    const btnGoogle = document.getElementById('btnGoogleLogin');
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', () => {
+            showToast('Login com Google em breve disponível!');
+        });
+    }
+}
+
+// ============================================================
 // INICIALIZAÇÃO
 // ============================================================
-
 async function init() {
     await carregarProdutos();
     renderCategories();
