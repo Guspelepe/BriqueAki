@@ -12,7 +12,9 @@
         <div class="header-inner">
             <div class="header-row">
                 <div class="logo-area">
-                    <img src="logo.png" alt="TrocaTudo" id="logo" />
+                    <a href="index.html">
+                        <img src="logo.png" alt="TrocaTudo" id="logo" />
+                    </a>
                 </div>
                 
                 <div class="search-bar">
@@ -29,12 +31,13 @@
                     <button class="btn btn-logout" id="btnLogout">Sair</button>
                 </div>
                 <div class="user-info" id="userInfoLoggedOut">
+                    <button class="btn btn-new-ad" onclick="window.location.href='index.html?tab=novoAnuncio'">Novo Anúncio</button>
                     <button class="btn btn-login" onclick="abrirAuthModal('login')">Entrar</button>
                     <button class="btn btn-register" onclick="abrirAuthModal('register')">Cadastrar</button>
                 </div>
             </div>
 
-            <!-- Filtros rápidos (Região e Cidade) -->
+            <!-- Filtros + ABAS na header -->
             <div class="filters-row">
                 <select id="searchEstado">
                     <option value="">Região</option>
@@ -49,15 +52,23 @@
                     <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                 </select>
                 <input type="text" id="searchCidade" placeholder="Cidade..." />
+                
+                <!-- ABAS NA HEADER (sem emojis) -->
+                <button class="tab-btn-header active" data-tab="tabAnuncios">Anúncios</button>
+                <button class="tab-btn-header" data-tab="tabMeusAnuncios">Meus Anúncios</button>
+                <button class="tab-btn-header" data-tab="tabNovoAnuncio">Novo Anúncio</button>
+                <button class="tab-btn-header" data-tab="tabGames">Ganhar Moedas</button>
+                <button class="tab-btn-header" data-tab="tabAvaliacao">Avaliação</button>
+                <button class="tab-btn-header" data-tab="tabChats">Chat</button>
+                <button class="tab-btn-header" data-tab="tabAdmin" id="tabAdminBtn" style="display:none;">Admin</button>
             </div>
         </div>
     </header>
 
-    <!-- ===== CONTEÚDO PRINCIPAL (centralizado) ===== -->
+    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
     <div class="container">
-        <!-- ===== MODAL DE LOGIN / CADASTRO ===== -->
+        <!-- MODAL DE LOGIN / CADASTRO -->
         <div class="auth-container hidden" id="authModal">
-            <!-- TELA DE LOGIN -->
             <div class="auth-box" id="loginBox">
                 <button class="modal-close" onclick="fecharAuthModal()">✕</button>
                 <h2>Digite seu e-mail ou telefone para iniciar sessão</h2>
@@ -79,35 +90,34 @@
                 </div>
             </div>
 
-            <!-- TELA DE CADASTRO (com tamanho reduzido) -->
-            <div class="auth-box hidden" id="registerBox" style="padding: 25px 30px;">
+            <div class="auth-box hidden" id="registerBox">
                 <button class="modal-close" onclick="fecharAuthModal()">✕</button>
-                <h2 style="font-size: 1.3rem; margin-bottom: 5px;">Criar conta</h2>
-                <p class="subtitle" style="margin-bottom: 15px; font-size: 0.85rem;">Preencha seus dados para começar</p>
+                <h2>Criar conta</h2>
+                <p class="subtitle">Preencha seus dados para começar</p>
                 <div id="registerError" class="error-msg">❌ Preencha todos os campos corretamente</div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>Nome completo *</label>
-                    <input type="text" id="regNome" placeholder="Maria Silva" style="padding: 10px 12px;" />
+                    <input type="text" id="regNome" placeholder="Maria Silva" />
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>CPF *</label>
-                    <input type="text" id="regCpf" placeholder="123.456.789-00" maxlength="14" style="padding: 10px 12px;" />
+                    <input type="text" id="regCpf" placeholder="123.456.789-00" maxlength="14" />
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>E-mail *</label>
-                    <input type="email" id="regEmail" placeholder="maria@email.com" style="padding: 10px 12px;" />
+                    <input type="email" id="regEmail" placeholder="maria@email.com" />
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>Telefone *</label>
-                    <input type="text" id="regTelefone" placeholder="(11) 98765-4321" style="padding: 10px 12px;" />
+                    <input type="text" id="regTelefone" placeholder="(11) 98765-4321" />
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>Cidade *</label>
-                    <input type="text" id="regCidade" placeholder="São Paulo" style="padding: 10px 12px;" />
+                    <input type="text" id="regCidade" placeholder="São Paulo" />
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>Estado *</label>
-                    <select id="regEstado" style="padding: 10px 12px;">
+                    <select id="regEstado">
                         <option value="">Selecione</option>
                         <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
                         <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
@@ -120,12 +130,12 @@
                         <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                     </select>
                 </div>
-                <div class="form-group" style="margin-bottom: 12px;">
+                <div class="form-group">
                     <label>Senha *</label>
-                    <input type="password" id="regSenha" placeholder="Min. 6 caracteres" style="padding: 10px 12px;" />
+                    <input type="password" id="regSenha" placeholder="Min. 6 caracteres" />
                 </div>
-                <button class="btn-primary" id="btnRegister" style="padding: 12px; font-size: 0.95rem;">Criar conta</button>
-                <div class="switch-link" style="margin-top: 12px; font-size: 0.85rem;">
+                <button class="btn-primary" id="btnRegister">Criar conta</button>
+                <div class="switch-link">
                     <a onclick="abrirAuthModal('login')">Já tem conta? Fazer login</a>
                 </div>
             </div>
@@ -134,23 +144,9 @@
         <!-- BARRA DE CATEGORIAS -->
         <div class="categories-bar" id="categoriesBar"></div>
 
-        <!-- GRID DE PRODUTOS -->
-        <div class="products-area">
-            <div id="listaAnuncios" class="cards-grid"></div>
-        </div>
-
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tabAnuncios">Anúncios</button>
-            <button class="tab-btn" data-tab="tabMeusAnuncios">Meus Anúncios</button>
-            <button class="tab-btn" data-tab="tabNovoAnuncio">Novo Anúncio</button>
-            <button class="tab-btn" data-tab="tabGames">Ganhar Moedas</button>
-            <button class="tab-btn" data-tab="tabAvaliacao">Avaliação de Preço</button>
-            <button class="tab-btn" data-tab="tabAdmin">Admin</button>
-        </div>
-
+        <!-- ===== TAB CONTENTS ===== -->
         <div class="tab-content active" id="tabAnuncios">
-            <p style="color:#94a3b8; text-align:center; padding:20px;">Use a barra de categorias e filtros para navegar.</p>
+            <div id="listaAnuncios" class="cards-grid"></div>
         </div>
         <div class="tab-content" id="tabMeusAnuncios">
             <div id="meusAnuncios" class="cards-grid"></div>
@@ -158,6 +154,7 @@
         <div class="tab-content" id="tabNovoAnuncio">
             <div class="form-box">
                 <h2>Publicar novo anúncio</h2>
+                <!-- ... formulário ... -->
                 <div class="form-row">
                     <div class="form-group" style="flex: 2;">
                         <label>Título do produto *</label>
@@ -238,6 +235,7 @@
             </div>
         </div>
         <div class="tab-content" id="tabGames">
+            <!-- ... games ... -->
             <div class="game-box">
                 <h3>Caça-Níquel</h3>
                 <p>Gire e ganhe moedas! Cada giro custa 5 moedas.</p>
@@ -274,6 +272,7 @@
             </div>
         </div>
         <div class="tab-content" id="tabAvaliacao">
+            <!-- ... avaliação ... -->
             <div class="price-evaluation">
                 <h2>Avaliação de Preço por Condição</h2>
                 <p style="color:#64748b;margin-bottom:20px;">Com base na condição dos produtos anunciados, o sistema calcula uma média de preço para cada condição.</p>
@@ -284,40 +283,25 @@
                 <div id="categoryEvaluationGrid" class="eval-grid"></div>
             </div>
         </div>
+        <div class="tab-content" id="tabChats">
+            <div class="form-box">
+                <h2>Minhas Conversas</h2>
+                <div id="chatListContainer"><p style="color:#94a3b8;text-align:center;padding:20px;">Carregando conversas...</p></div>
+            </div>
+        </div>
         <div class="tab-content" id="tabAdmin">
             <div class="form-box">
                 <h2>Painel Administrativo</h2>
                 <div class="admin-stats">
-                    <div>
-                        <strong id="adminTotalUsers">0</strong>
-                        <div>Usuários</div>
-                    </div>
-                    <div>
-                        <strong id="adminTotalProducts">0</strong>
-                        <div>Produtos</div>
-                    </div>
-                    <div>
-                        <strong id="adminTotalCoins">0</strong>
-                        <div>Moedas em circulação</div>
-                    </div>
-                    <div>
-                        <strong id="adminTotalFees">0</strong>
-                        <div>Taxas arrecadadas</div>
-                    </div>
+                    <div><strong id="adminTotalUsers">0</strong><div>Usuários</div></div>
+                    <div><strong id="adminTotalProducts">0</strong><div>Produtos</div></div>
+                    <div><strong id="adminTotalCoins">0</strong><div>Moedas em circulação</div></div>
+                    <div><strong id="adminTotalFees">0</strong><div>Taxas arrecadadas</div></div>
                 </div>
                 <h3 style="margin:20px 0 10px;">Todos os Produtos</h3>
                 <div style="overflow-x:auto;">
                     <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Produto</th>
-                                <th>Dono</th>
-                                <th>Preço</th>
-                                <th>Condição</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Produto</th><th>Dono</th><th>Preço</th><th>Condição</th><th>Status</th><th>Ações</th></tr></thead>
                         <tbody id="adminProductList"></tbody>
                     </table>
                 </div>
@@ -356,7 +340,6 @@
 
     <div id="toast" class="toast">✅ Ação concluída</div>
 
-    <!-- Scripts -->
     <script type="importmap">
         {
             "imports": {

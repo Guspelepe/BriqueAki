@@ -335,10 +335,10 @@ window.comprarProduto = async function(id) {
 
 window.abrirChatProduto = function(produtoId, dono) {
     if (!currentUser) {
-        showToast('🔒 Faça login para usar o chat.');
+        showToast(' Faça login para usar o chat.');
         return;
     }
-    window.location.href = `index.html?chat=${produtoId}&with=${encodeURIComponent(dono)}`;
+    window.location.href = `index.html?tab=chats&chat=${produtoId}&with=${encodeURIComponent(dono)}`;
 };
 
 // ============================================================

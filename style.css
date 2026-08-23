@@ -1282,3 +1282,124 @@ header {
 .hidden {
     display: none !important;
 }
+
+/* ===== ABAS NA HEADER ===== */
+.tab-btn-header {
+    padding: 6px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+}
+.tab-btn-header:hover {
+    color: white;
+    background: rgba(255,255,255,0.15);
+}
+.tab-btn-header.active {
+    color: var(--text-dark, #0f172a);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.tab-btn-header.active:hover {
+    background: white;
+}
+
+/* Ajuste no filtros-row para acomodar as abas */
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    align-items: center;
+}
+.filters-row select,
+.filters-row input {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    outline: none;
+    flex: 0 1 auto;
+    min-width: 100px;
+}
+.filters-row select option {
+    color: var(--text-dark, #0f172a);
+    background: white;
+}
+.filters-row input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+.filters-row select:focus,
+.filters-row input:focus {
+    background: rgba(255,255,255,0.3);
+}
+
+/* ===== NOVO BOTÃO "NOVO ANÚNCIO" NO HEADER ===== */
+.btn-new-ad {
+    background: #22c55e;
+    color: white;
+}
+.btn-new-ad:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+}
+
+/* ===== LISTA DE CHATS ===== */
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 12px;
+}
+.chat-list-item:hover {
+    background: #f8fafc;
+}
+.chat-list-item .chat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.chat-list-item .chat-info .chat-with {
+    font-weight: 600;
+    color: var(--text-dark, #0f172a);
+}
+.chat-list-item .chat-info .chat-product {
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+}
+.chat-list-item .chat-info .chat-last-msg {
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.chat-list-item .chat-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+.chat-list-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+}
+.chat-list-empty .emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+}

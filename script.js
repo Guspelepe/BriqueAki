@@ -160,7 +160,7 @@ function gerarImagemHtml(produto, classe = 'product-image') {
     `;
 }
 
-// ===== CATEGORIAS COM EMOJIS =====
+// ===== CATEGORIAS =====
 const categoriasMap = {
     'Eletrônicos': { emoji: '📱', label: 'Eletrônicos' },
     'Livros': { emoji: '📚', label: 'Livros' },
@@ -174,7 +174,6 @@ const categoriasMap = {
     'Acessórios': { emoji: '⌚', label: 'Acessórios' }
 };
 
-// ===== RENDERIZAR BARRA DE CATEGORIAS =====
 function renderCategories() {
     if (!categoriesBar) return;
     categoriesBar.innerHTML = `
@@ -236,6 +235,7 @@ async function loginUser(email, senha) {
         localProduto.value = `${currentUser.cidade}/${currentUser.estado}`;
     }
     verificarBonusDiario();
+    renderChats();
     showToast(`👋 Bem-vindo(a), ${currentUser.nome}!`);
     return true;
 }
@@ -320,6 +320,10 @@ function atualizarHeader() {
         atualizarMoedas();
         atualizarBadge();
         if (localProduto) localProduto.value = `${currentUser.cidade}/${currentUser.estado}`;
+        const adminBtn = document.getElementById('tabAdminBtn');
+        if (adminBtn) {
+            adminBtn.style.display = currentUser.isAdmin ? 'inline-block' : 'none';
+        }
     } else {
         if (userInfoLoggedIn) userInfoLoggedIn.style.display = 'none';
         if (userInfoLoggedOut) userInfoLoggedOut.style.display = 'flex';
@@ -328,6 +332,8 @@ function atualizarHeader() {
             notifBadge.textContent = '0';
             notifBadge.style.display = 'none';
         }
+        const adminBtn = document.getElementById('tabAdminBtn');
+        if (adminBtn) adminBtn.style.display = 'none';
     }
 }
 
@@ -384,7 +390,7 @@ function ordenarProdutos(produtos) {
 }
 
 // ============================================================
-// RENDERIZAR ANÚNCIOS (COM IMAGENS)
+// RENDERIZAR ANÚNCIOS
 // ============================================================
 function renderizarAnuncios() {
     if (!listaEl) return;
@@ -599,7 +605,7 @@ function calcularAvaliacaoPreco() {
 }
 
 // ============================================================
-// FUNÇÕES DE INTERAÇÃO (Troca, Compra, Chat, etc.)
+// FUNÇÕES DE INTERAÇÃO
 // ============================================================
 window.solicitarTroca = function(id) {
     if (!currentUser) {
@@ -1089,243 +1095,210 @@ function salvarProduto(titulo, descricao, categoria, local, troca, fotos, preco,
 }
 
 // ============================================================
-// TABS
+// RENDERIZAR LISTA DE CHATS
 // ============================================================
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const tabId = this.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        const content = document.getElementById(tabId);
-        if (content) content.classList.add('active');
-        if (tabId === 'tabMeusAnuncios') renderMeusAnuncios();
-        if (tabId === 'tabAdmin') renderAdminPanel();
-        if (tabId === 'tabGames') {
-            atualizarMoedas();
-            verificarBonusDiario();
-        }
-        if (tabId === 'tabAvaliacao') calcularAvaliacaoPreco();
-    });
-});
-
-// ============================================================
-// CONTROLE DO MODAL DE LOGIN (consolidado)
-// ============================================================
-function abrirAuthModal(tipo) {
-    console.log('🔓 abrirAuthModal chamado com tipo:', tipo);
-    if (!authModal) {
-        console.error('❌ Elemento #authModal não encontrado no DOM!');
+async function renderChats() {
+    const container = document.getElementById('chatListContainer');
+    if (!container) return;
+    
+    if (!currentUser) {
+        container.innerHTML = `
+            <div class="chat-list-empty">
+                <span class="emoji">🔒</span>
+                <p>Faça login para ver suas conversas.</p>
+            </div>
+        `;
         return;
     }
-    authModal.classList.add('active');
-    if (tipo === 'login') {
-        if (loginBox) loginBox.classList.remove('hidden');
-        if (registerBox) registerBox.classList.add('hidden');
-        console.log('✅ Exibindo tela de login');
-    } else if (tipo === 'register') {
-        if (loginBox) loginBox.classList.add('hidden');
-        if (registerBox) registerBox.classList.remove('hidden');
-        console.log('✅ Exibindo tela de cadastro');
+
+    try {
+        const chats = await db.chats
+            .filter(c => c.usuario1 === currentUser.email || c.usuario2 === currentUser.email)
+            .toArray();
+
+        if (chats.length === 0) {
+            container.innerHTML = `
+                <div class="chat-list-empty">
+                    <span class="emoji">💬</span>
+                    <p>Você ainda não tem conversas.</p>
+                    <p style="font-size:0.85rem;margin-top:5px;">Clique em "Falar com vendedor" em um produto para iniciar uma conversa.</p>
+                </div>
+            `;
+            return;
+        }
+
+        chats.sort((a, b) => {
+            const aLast = a.mensagens.length > 0 ? new Date(a.mensagens[a.mensagens.length - 1].data) : new Date(a.data);
+            const bLast = b.mensagens.length > 0 ? new Date(b.mensagens[b.mensagens.length - 1].data) : new Date(b.data);
+            return bLast - aLast;
+        });
+
+        let html = '';
+        for (const chat of chats) {
+            const outro = chat.usuario1 === currentUser.email ? chat.usuario2 : chat.usuario1;
+            const ultimaMsg = chat.mensagens.length > 0 ? chat.mensagens[chat.mensagens.length - 1] : null;
+            const dataMsg = ultimaMsg ? new Date(ultimaMsg.data) : new Date(chat.data);
+            const dataFormatada = dataMsg.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            
+            const produto = await db.produtos.get(chat.produtoId);
+            const nomeProduto = produto ? produto.titulo : 'Produto desconhecido';
+
+            html += `
+                <div class="chat-list-item" onclick="abrirChat(${chat.produtoId}, '${outro}')">
+                    <div class="chat-info">
+                        <div class="chat-with">👤 ${escapeHtml(outro)}</div>
+                        <div class="chat-product">📦 ${escapeHtml(nomeProduto)}</div>
+                        ${ultimaMsg ? `<div class="chat-last-msg">${escapeHtml(ultimaMsg.texto)}</div>` : ''}
+                    </div>
+                    <div class="chat-date">${dataFormatada}</div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Erro ao carregar chats:', error);
+        container.innerHTML = `<div class="error-msg">❌ Erro ao carregar conversas.</div>`;
     }
-    if (loginError) loginError.classList.remove('show');
-    if (registerError) registerError.classList.remove('show');
-}
-
-function fecharAuthModal() {
-    if (authModal) authModal.classList.remove('active');
-    console.log('🔒 Modal fechado');
-}
-
-function showLoginBox() {
-    if (loginBox) loginBox.classList.remove('hidden');
-    if (registerBox) registerBox.classList.add('hidden');
-    if (loginError) loginError.classList.remove('show');
-}
-
-function showRegisterBox() {
-    if (loginBox) loginBox.classList.add('hidden');
-    if (registerBox) registerBox.classList.remove('hidden');
-    if (registerError) registerError.classList.remove('show');
 }
 
 // ============================================================
-// EXPOR FUNÇÕES PARA O HTML (onclick) - SOLUÇÃO DEFINITIVA
+// NAVEGAÇÃO COM ABAS NA HEADER
+// ============================================================
+function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn-header');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            this.classList.add('active');
+            const content = document.getElementById(tabId);
+            if (content) content.classList.add('active');
+
+            // Ações específicas por aba
+            if (tabId === 'tabMeusAnuncios') renderMeusAnuncios();
+            if (tabId === 'tabAdmin') renderAdminPanel();
+            if (tabId === 'tabGames') {
+                atualizarMoedas();
+                verificarBonusDiario();
+            }
+            if (tabId === 'tabAvaliacao') calcularAvaliacaoPreco();
+            if (tabId === 'tabChats') renderChats();
+        });
+    });
+}
+
+// ============================================================
+// CONTROLE DO MODAL DE LOGIN (FUNÇÃO ÚNICA E CORRETA)
 // ============================================================
 window.abrirAuthModal = function(tipo) {
-    console.log('🔓 abrirAuthModal chamado via onclick, tipo:', tipo);
-    const modal = document.getElementById('authModal');
-    if (!modal) {
-        console.error('❌ Elemento #authModal não encontrado!');
+    console.log('🔓 abrirAuthModal chamado, tipo:', tipo);
+    if (!authModal) {
+        console.error('❌ #authModal não encontrado');
         return;
     }
-    // Remove 'hidden' e adiciona 'active' para exibir
-    modal.classList.remove('hidden');
-    modal.classList.add('active');
-    
-    const loginBox = document.getElementById('loginBox');
-    const registerBox = document.getElementById('registerBox');
+    // Remove 'hidden' e adiciona 'active'
+    authModal.classList.remove('hidden');
+    authModal.classList.add('active');
     if (tipo === 'login') {
-        if (loginBox) loginBox.classList.remove('hidden');
-        if (registerBox) registerBox.classList.add('hidden');
-        console.log('✅ Exibindo tela de login');
+        loginBox.classList.remove('hidden');
+        registerBox.classList.add('hidden');
     } else if (tipo === 'register') {
-        if (loginBox) loginBox.classList.add('hidden');
-        if (registerBox) registerBox.classList.remove('hidden');
-        console.log('✅ Exibindo tela de cadastro');
+        loginBox.classList.add('hidden');
+        registerBox.classList.remove('hidden');
     }
-    // Limpar erros
-    const loginError = document.getElementById('loginError');
-    const registerError = document.getElementById('registerError');
     if (loginError) loginError.classList.remove('show');
     if (registerError) registerError.classList.remove('show');
 };
 
 window.fecharAuthModal = function() {
-    const modal = document.getElementById('authModal');
-    if (!modal) return;
-    // Remove 'active' e adiciona 'hidden' para ocultar
-    modal.classList.remove('active');
-    modal.classList.add('hidden');
+    if (!authModal) return;
+    authModal.classList.remove('active');
+    authModal.classList.add('hidden');
     console.log('🔒 Modal fechado');
 };
 
-// Garantir que o botão "Continuar" também funcione
-document.addEventListener('DOMContentLoaded', function() {
-    const btnLogin = document.getElementById('btnLogin');
-    if (btnLogin) {
-        btnLogin.addEventListener('click', function() {
-            const email = document.getElementById('loginEmail')?.value || '';
-            const senha = document.getElementById('loginSenha')?.value || '';
-            loginUser(email, senha);
-        });
-    }
-    const btnRegister = document.getElementById('btnRegister');
-    if (btnRegister) {
-        btnRegister.addEventListener('click', function() {
-            registerUser();
-        });
-    }
-});
+function showLoginBox() {
+    loginBox.classList.remove('hidden');
+    registerBox.classList.add('hidden');
+    loginError.classList.remove('show');
+}
 
-
+function showRegisterBox() {
+    loginBox.classList.add('hidden');
+    registerBox.classList.remove('hidden');
+    registerError.classList.remove('show');
+}
 
 // ============================================================
 // EVENTOS
 // ============================================================
 function initEventListeners() {
-    console.log('⚡ Inicializando event listeners...');
-
-    // Botões do header
-    if (btnLoginHeader) {
-        btnLoginHeader.addEventListener('click', () => {
-            console.log('👆 Clique em "Entrar"');
-            abrirAuthModal('login');
-        });
-    } else {
-        console.warn('⚠️ btnLoginHeader não encontrado!');
-    }
-
-    if (btnRegisterHeader) {
-        btnRegisterHeader.addEventListener('click', () => {
-            console.log('👆 Clique em "Cadastrar"');
-            abrirAuthModal('register');
-        });
-    } else {
-        console.warn('⚠️ btnRegisterHeader não encontrado!');
-    }
-
-    // Botões do modal
+    // Login via botão "Continuar" no modal
     if (btnLogin) {
         btnLogin.addEventListener('click', () => {
-            console.log('👆 Clique em "Continuar" (login)');
             loginUser(loginEmail.value.trim(), loginSenha.value);
         });
-    } else {
-        console.warn('⚠️ btnLogin não encontrado!');
     }
-
-    if (btnRegister) {
-        btnRegister.addEventListener('click', () => {
-            console.log('👆 Clique em "Criar conta"');
-            registerUser();
+    if (loginEmail) {
+        loginEmail.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnLogin?.click();
         });
-    } else {
-        console.warn('⚠️ btnRegister não encontrado!');
+    }
+    if (loginSenha) {
+        loginSenha.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnLogin?.click();
+        });
     }
 
-    if (closeAuthModal) {
-        closeAuthModal.addEventListener('click', fecharAuthModal);
-    }
-    if (closeAuthModal2) {
-        closeAuthModal2.addEventListener('click', fecharAuthModal);
-    }
+    // Cadastro
+    if (btnRegister) btnRegister.addEventListener('click', registerUser);
+    if (showRegister) showRegister.addEventListener('click', showRegisterBox);
+    if (showLogin) showLogin.addEventListener('click', showLoginBox);
+
+    // Logout
+    if (btnLogout) btnLogout.addEventListener('click', logoutUser);
+
+    // Publicar anúncio
+    if (btnPublicar) btnPublicar.addEventListener('click', publicarAnuncio);
+
+    // Notificações
+    if (btnNotifications) btnNotifications.addEventListener('click', toggleNotifications);
+
+    // Busca
+    if (btnSearch) btnSearch.addEventListener('click', renderizarAnuncios);
+    if (searchText) searchText.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') renderizarAnuncios();
+    });
+    if (searchCidade) searchCidade.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') renderizarAnuncios();
+    });
+    if (searchEstado) searchEstado.addEventListener('change', renderizarAnuncios);
+
+    // Games
+    if (btnGirar) btnGirar.addEventListener('click', girarSlot);
+    if (btnDailyBonus) btnDailyBonus.addEventListener('click', coletarBonusDiario);
+
+    // Fechar modal clicando fora
     if (authModal) {
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) fecharAuthModal();
         });
     }
+    if (closeAuthModal) closeAuthModal.addEventListener('click', fecharAuthModal);
+    if (closeAuthModal2) closeAuthModal2.addEventListener('click', fecharAuthModal);
 
-    if (showRegister) {
-        showRegister.addEventListener('click', () => {
-            console.log('👆 Clique em "Criar conta" (link)');
-            abrirAuthModal('register');
-        });
+    // Botões do header (podem ter onclick inline, mas também adicionamos evento por segurança)
+    if (btnLoginHeader) {
+        btnLoginHeader.addEventListener('click', () => window.abrirAuthModal('login'));
     }
-    if (showLogin) {
-        showLogin.addEventListener('click', () => {
-            console.log('👆 Clique em "Fazer login" (link)');
-            abrirAuthModal('login');
-        });
-    }
-
-    // Logout
-    if (btnLogout) {
-        btnLogout.addEventListener('click', logoutUser);
-    }
-
-    // Publicar anúncio
-    if (btnPublicar) {
-        btnPublicar.addEventListener('click', publicarAnuncio);
-    }
-
-    // Notificações
-    if (btnNotifications) {
-        btnNotifications.addEventListener('click', toggleNotifications);
-    }
-
-    // Busca
-    if (btnSearch) {
-        btnSearch.addEventListener('click', renderizarAnuncios);
-    }
-    if (searchText) {
-        searchText.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') renderizarAnuncios();
-        });
-    }
-    if (searchCidade) {
-        searchCidade.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') renderizarAnuncios();
-        });
-    }
-    if (searchEstado) {
-        searchEstado.addEventListener('change', renderizarAnuncios);
-    }
-
-    // Games
-    if (btnGirar) {
-        btnGirar.addEventListener('click', girarSlot);
-    }
-    if (btnDailyBonus) {
-        btnDailyBonus.addEventListener('click', coletarBonusDiario);
-    }
-
-    // Botão Google (placeholder)
-    const btnGoogle = document.getElementById('btnGoogleLogin');
-    if (btnGoogle) {
-        btnGoogle.addEventListener('click', () => {
-            showToast('Login com Google em breve disponível!');
-        });
+    if (btnRegisterHeader) {
+        btnRegisterHeader.addEventListener('click', () => window.abrirAuthModal('register'));
     }
 }
 
@@ -1336,6 +1309,7 @@ async function init() {
     await carregarProdutos();
     renderCategories();
     renderizarAnuncios();
+
     const saved = localStorage.getItem('currentUser');
     if (saved) {
         try {
@@ -1349,10 +1323,41 @@ async function init() {
                 calcularAvaliacaoPreco();
                 atualizarBadge();
                 verificarBonusDiario();
+                renderChats();
             }
         } catch (e) {}
     }
+
+    initTabs();
     initEventListeners();
+
+    // Parâmetros da URL
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+        const map = {
+            'anuncios': 'tabAnuncios',
+            'meusAnuncios': 'tabMeusAnuncios',
+            'novoAnuncio': 'tabNovoAnuncio',
+            'games': 'tabGames',
+            'avaliacao': 'tabAvaliacao',
+            'chats': 'tabChats',
+            'admin': 'tabAdmin'
+        };
+        const target = map[tabParam.toLowerCase()];
+        if (target) {
+            document.querySelectorAll('.tab-btn-header').forEach(b => {
+                if (b.dataset.tab === target) b.click();
+            });
+        }
+    }
+
+    const chatId = parseInt(params.get('chat'));
+    const withUser = params.get('with');
+    if (chatId && withUser && currentUser) {
+        setTimeout(() => abrirChat(chatId, withUser), 600);
+    }
+
     console.log('✅ Inicialização concluída.');
 }
 
