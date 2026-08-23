@@ -8,9 +8,10 @@
 </head>
 <body>
     <div class="container">
-        <!-- ===== TELA DE LOGIN ===== -->
-        <div class="auth-container" id="authContainer">
+        <!-- ===== MODAL DE LOGIN / CADASTRO ===== -->
+        <div class="auth-container hidden" id="authModal">
             <div class="auth-box" id="loginBox">
+                <button class="modal-close" id="closeAuthModal">✕</button>
                 <h2>🔐 Entrar</h2>
                 <p class="subtitle">Acesse sua conta para trocar produtos</p>
                 <div class="demo-account">
@@ -39,6 +40,7 @@
             </div>
 
             <div class="auth-box hidden" id="registerBox">
+                <button class="modal-close" id="closeAuthModal2">✕</button>
                 <h2>📝 Criar conta</h2>
                 <p class="subtitle">Preencha seus dados para começar</p>
                 <div id="registerError" class="error-msg">❌ Preencha todos os campos corretamente</div>
@@ -91,17 +93,41 @@
         <!-- ===== APLICAÇÃO PRINCIPAL ===== -->
         <div class="main-app" id="mainApp">
             <header>
-                <h1>🔄 Troca<span>Tudo</span></h1>
-                <div class="user-info">
-                    <span class="user-name" id="displayName">Usuário</span>
-                    <span class="coins-display" id="coinsDisplay">🪙 0</span>
-                    <button class="btn btn-notification" id="btnNotifications">
-                        🔔 <span class="badge" id="notifBadge">0</span>
-                    </button>
-                    <button class="btn btn-logout" id="btnLogout">Sair</button>
+                <div class="header-row">
+                    <h1>🔄 Troca<span>Tudo</span></h1>
+                    <div class="search-bar">
+                        <input type="text" id="searchText" placeholder="Buscar produtos..." />
+                        <button class="btn-search" id="btnSearch">🔍 Buscar</button>
+                    </div>
+                    <div class="user-info" id="userInfoLoggedIn" style="display:none;">
+                        <span class="user-name" id="displayName">Usuário</span>
+                        <span class="coins-display" id="coinsDisplay">🪙 0</span>
+                        <button class="btn btn-notification" id="btnNotifications">
+                            🔔 <span class="badge" id="notifBadge">0</span>
+                        </button>
+                        <button class="btn btn-logout" id="btnLogout">Sair</button>
+                    </div>
+                    <div class="user-info" id="userInfoLoggedOut">
+                        <button class="btn btn-login" id="btnLoginHeader">Entrar</button>
+                        <button class="btn btn-register" id="btnRegisterHeader">Cadastrar</button>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <select id="searchEstado"><option value="">Região</option><option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option></select>
+                    <input type="text" id="searchCidade" placeholder="Cidade..." />
+                    <select id="searchStatus"><option value="">Status</option><option value="disponivel">Disponível</option><option value="negociacao">Em negociação</option><option value="vendido">Vendido</option><option value="cancelado">Cancelado</option></select>
                 </div>
             </header>
 
+            <!-- BARRA DE CATEGORIAS -->
+            <div class="categories-bar" id="categoriesBar"></div>
+
+            <!-- ÁREA DE PRODUTOS -->
+            <div class="products-area">
+                <div id="listaAnuncios" class="cards-grid"></div>
+            </div>
+
+            <!-- TABS -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="tabAnuncios">📦 Anúncios</button>
                 <button class="tab-btn" data-tab="tabMeusAnuncios">📝 Meus Anúncios</button>
@@ -111,115 +137,54 @@
                 <button class="tab-btn" data-tab="tabAdmin">⚙️ Admin</button>
             </div>
 
-            <!-- Tab: Anúncios -->
             <div class="tab-content active" id="tabAnuncios">
-                <div class="search-box">
-                    <input type="text" id="searchText" placeholder="Buscar produtos..." />
-                    <input type="text" id="searchCidade" placeholder="Cidade..." />
-                    <select id="searchEstado">
-                        <option value="">Estado</option>
-                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
-                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
-                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
-                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
-                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
-                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
-                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
-                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
-                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
-                    </select>
-                    <select id="searchCategory">
-                        <option value="">Todas as categorias</option>
-                        <option value="Eletrônicos">📱 Eletrônicos</option>
-                        <option value="Roupas">👕 Roupas</option>
-                        <option value="Móveis">🪑 Móveis</option>
-                        <option value="Livros">📚 Livros</option>
-                        <option value="Esportes">⚽ Esportes</option>
-                        <option value="Automóveis">🚗 Automóveis</option>
-                        <option value="Casa">🏠 Casa</option>
-                        <option value="Outros">📦 Outros</option>
-                    </select>
-                    <select id="searchStatus">
-                        <option value="">Status</option>
-                        <option value="disponivel">Disponível</option>
-                        <option value="negociacao">Em negociação</option>
-                        <option value="vendido">Vendido</option>
-                        <option value="cancelado">Cancelado</option>
-                    </select>
-                    <button class="btn-search" id="btnSearch">🔍 Buscar</button>
-                </div>
-                <div id="listaAnuncios" class="cards-grid"></div>
+                <!-- Já exibido acima -->
             </div>
-
-            <!-- Tab: Meus Anúncios -->
             <div class="tab-content" id="tabMeusAnuncios">
                 <div id="meusAnuncios" class="cards-grid"></div>
             </div>
-
-            <!-- Tab: Novo Anúncio -->
             <div class="tab-content" id="tabNovoAnuncio">
                 <div class="form-box">
                     <h2>📦 Publicar novo anúncio</h2>
                     <div class="form-row">
-                        <div class="form-group" style="flex: 2;">
-                            <label>Título do produto *</label>
-                            <input type="text" id="tituloProduto" placeholder="Ex: Camiseta vintage" />
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>Categoria *</label>
+                        <div class="form-group" style="flex:2;"><label>Título *</label><input type="text" id="tituloProduto" placeholder="Ex: Camiseta vintage" /></div>
+                        <div class="form-group" style="flex:1;"><label>Categoria *</label>
                             <select id="categoriaProduto">
                                 <option value="Eletrônicos">📱 Eletrônicos</option>
-                                <option value="Roupas">👕 Roupas</option>
-                                <option value="Móveis">🪑 Móveis</option>
                                 <option value="Livros">📚 Livros</option>
+                                <option value="Games">🎮 Games</option>
+                                <option value="Roupas">👕 Roupas</option>
                                 <option value="Esportes">⚽ Esportes</option>
-                                <option value="Automóveis">🚗 Automóveis</option>
-                                <option value="Casa">🏠 Casa</option>
-                                <option value="Outros">📦 Outros</option>
+                                <option value="Casa e Decoração">🏠 Casa</option>
+                                <option value="Instrumentos Musicais">🎸 Música</option>
+                                <option value="Colecionáveis">🏷️ Colecionáveis</option>
+                                <option value="Brinquedos">🧸 Brinquedos</option>
+                                <option value="Acessórios">⌚ Acessórios</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group" style="flex: 2;">
-                            <label>Descrição *</label>
-                            <textarea id="descricaoProduto" placeholder="Descreva seu produto..."></textarea>
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>Local *</label>
-                            <input type="text" id="localProduto" placeholder="Cidade/UF" />
-                        </div>
+                        <div class="form-group" style="flex:2;"><label>Descrição *</label><textarea id="descricaoProduto" placeholder="Descreva..."></textarea></div>
+                        <div class="form-group" style="flex:1;"><label>Local *</label><input type="text" id="localProduto" placeholder="Cidade/UF" /></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Fotos do produto</label>
-                            <input type="file" id="fotoProduto" accept="image/*" multiple />
-                            <small style="color:#94a3b8;">Múltiplas fotos</small>
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>Valor em moedas *</label>
-                            <input type="number" id="precoMoedas" placeholder="Ex: 100" min="1" />
-                            <small style="color:#94a3b8;">Taxa de 15% vai para o administrador</small>
-                        </div>
+                        <div class="form-group"><label>Fotos</label><input type="file" id="fotoProduto" accept="image/*" multiple /><small>Múltiplas</small></div>
+                        <div class="form-group" style="flex:1;"><label>Valor (moedas) *</label><input type="number" id="precoMoedas" placeholder="100" min="1" /><small>15% taxa</small></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Condição do produto *</label>
+                        <div class="form-group"><label>Condição *</label>
                             <select id="condicaoProduto">
                                 <option value="novo">🆕 Novo</option>
                                 <option value="lacrado">📦 Lacrado</option>
                                 <option value="seminovo">✨ Seminovo</option>
-                                <option value="usado">👍 Usado em boas condições</option>
-                                <option value="ruim">⚠️ Usado - precisa de reparos</option>
+                                <option value="usado">👍 Usado</option>
+                                <option value="ruim">⚠️ Precisa reparos</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex: 2;">
-                            <label>O que você deseja em troca?</label>
-                            <input type="text" id="trocaDesejada" placeholder="Ex: Livros, roupas..." />
-                        </div>
+                        <div class="form-group" style="flex:2;"><label>Troca desejada</label><input type="text" id="trocaDesejada" placeholder="Ex: Livros..." /></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Status do produto</label>
+                        <div class="form-group"><label>Status</label>
                             <select id="statusProduto">
                                 <option value="disponivel">Disponível</option>
                                 <option value="negociacao">Em negociação</option>
@@ -227,18 +192,11 @@
                                 <option value="cancelado">Cancelado</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex: 0 0 200px;">
-                            <label>&nbsp;</label>
-                            <button class="btn" id="btnPublicar" style="width:100%; background:#0f172a; color:white; padding:12px;">Publicar</button>
-                        </div>
+                        <div class="form-group" style="flex:0 0 200px;"><label>&nbsp;</label><button class="btn" id="btnPublicar" style="width:100%;background:#0f172a;color:white;padding:12px;">Publicar</button></div>
                     </div>
-                    <div class="admin-fee-info">
-                        💰 Ao vender, você recebe o valor em moedas - 15% de taxa administrativa
-                    </div>
+                    <div class="admin-fee-info">💰 Ao vender, recebe o valor - 15% de taxa</div>
                 </div>
             </div>
-
-            <!-- Tab: Games -->
             <div class="tab-content" id="tabGames">
                 <div class="game-box">
                     <h3>🎰 Caça-Níquel</h3>
@@ -253,7 +211,6 @@
                         <div class="reward-display" id="slotReward">💰 0</div>
                     </div>
                 </div>
-
                 <div class="game-box">
                     <h3>🎯 Bônus Diário</h3>
                     <p>Colete seu bônus diário de moedas!</p>
@@ -265,24 +222,20 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="game-box">
                     <h3>🪙 Minhas Moedas</h3>
                     <div class="game-area">
                         <div style="font-size:2rem;font-weight:700;color:#facc15;" id="coinBalanceDisplay">0</div>
                         <div style="color:#64748b;font-size:0.9rem;">
-                            <p>💰 Total de moedas já ganhas: <span id="totalCoinsEarned">0</span></p>
-                            <p>💸 Taxa administrativa total paga: <span id="totalFeesPaid">0</span></p>
+                            <p>💰 Total ganhas: <span id="totalCoinsEarned">0</span></p>
+                            <p>💸 Taxas pagas: <span id="totalFeesPaid">0</span></p>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Tab: Avaliação de Preço -->
             <div class="tab-content" id="tabAvaliacao">
                 <div class="price-evaluation">
                     <h2>📊 Avaliação de Preço por Condição</h2>
-                    <p style="color:#64748b;margin-bottom:20px;">Com base na condição dos produtos anunciados, o sistema calcula uma média de preço para cada condição.</p>
                     <div id="priceEvaluationGrid" class="eval-grid"></div>
                 </div>
                 <div class="price-evaluation">
@@ -290,8 +243,6 @@
                     <div id="categoryEvaluationGrid" class="eval-grid"></div>
                 </div>
             </div>
-
-            <!-- Tab: Admin -->
             <div class="tab-content" id="tabAdmin">
                 <div class="form-box">
                     <h2>⚙️ Painel Administrativo</h2>
@@ -306,67 +257,47 @@
                         </div>
                         <div style="background:#f8fafc;padding:15px 25px;border-radius:12px;border:1px solid #e2e8f0;">
                             <strong style="font-size:1.5rem;color:#0f172a;" id="adminTotalCoins">0</strong>
-                            <div style="color:#64748b;">Moedas em circulação</div>
+                            <div style="color:#64748b;">Moedas</div>
                         </div>
                         <div style="background:#f8fafc;padding:15px 25px;border-radius:12px;border:1px solid #e2e8f0;">
                             <strong style="font-size:1.5rem;color:#0f172a;" id="adminTotalFees">0</strong>
-                            <div style="color:#64748b;">Taxas arrecadadas</div>
+                            <div style="color:#64748b;">Taxas</div>
                         </div>
                     </div>
-                    <h3 style="margin:20px 0 10px;">📦 Todos os Produtos</h3>
+                    <h3>📦 Todos os Produtos</h3>
                     <div style="overflow-x:auto;">
                         <table class="admin-table" style="width:100%;border-collapse:collapse;">
-                            <thead>
-                                <tr style="background:#f8fafc;">
-                                    <th style="padding:10px;text-align:left;">Produto</th>
-                                    <th style="padding:10px;text-align:left;">Dono</th>
-                                    <th style="padding:10px;text-align:left;">Preço</th>
-                                    <th style="padding:10px;text-align:left;">Condição</th>
-                                    <th style="padding:10px;text-align:left;">Status</th>
-                                    <th style="padding:10px;text-align:left;">Ações</th>
-                                </tr>
-                            </thead>
+                            <thead><tr style="background:#f8fafc;"><th>Produto</th><th>Dono</th><th>Preço</th><th>Condição</th><th>Status</th><th>Ações</th></tr></thead>
                             <tbody id="adminProductList"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Notificações -->
             <div class="notifications-panel" id="notificationsPanel">
                 <h2>🔔 Notificações</h2>
                 <div id="notificationsList"></div>
             </div>
 
             <div class="footer-notes">
-                💡 Trocas com moedas • 15% de taxa administrativa • Ganhe moedas nos minijogos
+                💡 Trocas com moedas • 15% de taxa • Ganhe moedas nos minijogos
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL DO PRODUTO ===== -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="fecharModal()">✕</button>
-            <div id="modalBody"></div>
-        </div>
-    </div>
-
-    <!-- ===== MODAL DO CHAT ===== -->
-    <div class="modal chat-modal" id="chatModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="fecharChat()">✕</button>
-            <h2 id="chatTitle">💬 Conversa</h2>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
-                <button onclick="enviarMensagem()">Enviar</button>
-            </div>
-        </div>
-    </div>
+    <!-- MODAIS -->
+    <div class="modal" id="productModal"><div class="modal-content"><button class="modal-close" onclick="fecharModal()">✕</button><div id="modalBody"></div></div></div>
+    <div class="modal chat-modal" id="chatModal"><div class="modal-content"><button class="modal-close" onclick="fecharChat()">✕</button><h2 id="chatTitle">💬 Conversa</h2><div class="chat-messages" id="chatMessages"></div><div class="chat-input-area"><input type="text" id="chatInput" placeholder="Digite..." /><button onclick="enviarMensagem()">Enviar</button></div></div></div>
 
     <div id="toast" class="toast">✅ Ação concluída</div>
 
-    <script src="script.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "dexie": "https://unpkg.com/dexie@3/dist/dexie.mjs"
+            }
+        }
+    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
