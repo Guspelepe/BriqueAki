@@ -56,7 +56,7 @@ header {
     flex: 0 0 auto;
 }
 #logo {
-    height: 60px;          /* AUMENTADO */
+    height: 60px;
     width: auto;
     display: block;
 }
@@ -139,6 +139,14 @@ header {
     background: var(--accent-hover);
     transform: translateY(-2px);
 }
+.btn-new-ad {
+    background: #22c55e;
+    color: white;
+}
+.btn-new-ad:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+}
 .btn-notification {
     background: #3b82f6;
     color: white;
@@ -189,6 +197,32 @@ header {
 }
 .filters-row select:focus,
 .filters-row input:focus {
+    background: white;
+}
+
+/* ===== ABAS NA HEADER ===== */
+.tab-btn-header {
+    padding: 6px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+}
+.tab-btn-header:hover {
+    color: white;
+    background: rgba(255,255,255,0.15);
+}
+.tab-btn-header.active {
+    color: var(--text-dark, #0f172a);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.tab-btn-header.active:hover {
     background: white;
 }
 
@@ -412,39 +446,10 @@ header {
 .btn-chat:hover {
     background: #7c3aed;
 }
-.btn-coin {
-    background: var(--accent);
-    color: var(--text-dark);
-}
-.btn-coin:hover {
-    background: var(--accent-hover);
-}
 
 /* ============================================================
    TABS
    ============================================================ */
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin: 30px 0 20px;
-    flex-wrap: wrap;
-}
-.tab-btn {
-    padding: 10px 25px;
-    background: #e2e8f0;
-    border: none;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.tab-btn.active {
-    background: var(--primary);
-    color: white;
-}
-.tab-btn:hover {
-    transform: translateY(-2px);
-}
 .tab-content {
     display: none;
 }
@@ -454,705 +459,6 @@ header {
 
 /* ============================================================
    MODAL DE LOGIN / CADASTRO
-   ============================================================ */
-.auth-container {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-.auth-container.active {
-    display: flex;
-}
-.auth-box {
-    background: white;
-    border-radius: var(--radius);
-    padding: 40px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 440px;
-    border: 1px solid var(--border-card);
-    position: relative;
-}
-.auth-box .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-.auth-box .modal-close:hover {
-    background: #dc2626;
-    transform: rotate(90deg);
-}
-.auth-box h2 {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-    color: var(--text-dark);
-}
-.auth-box .subtitle {
-    color: var(--text-muted);
-    margin-bottom: 25px;
-    font-size: 0.95rem;
-}
-.auth-box .form-group {
-    margin-bottom: 18px;
-}
-.auth-box label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 5px;
-}
-.auth-box input, .auth-box select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-    transition: 0.2s;
-    background: #fafbfc;
-}
-.auth-box input:focus, .auth-box select:focus {
-    border-color: var(--accent);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(250,204,21,0.15);
-    background: white;
-}
-.auth-box .btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-top: 5px;
-}
-.auth-box .btn-primary:hover {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-}
-.auth-box .demo-account {
-    background: #f0fdf4;
-    border: 2px solid #22c55e;
-    border-radius: var(--radius-sm);
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-.auth-box .demo-account p {
-    color: #166534;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-.auth-box .demo-account .demo-credentials {
-    font-size: 0.85rem;
-    color: #15803d;
-    background: white;
-    padding: 8px;
-    border-radius: 8px;
-    display: inline-block;
-}
-.hidden {
-    display: none !important;
-}
-.error-msg {
-    color: #ef4444;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    display: none;
-}
-.error-msg.show {
-    display: block;
-}
-.switch-link {
-    margin-top: 18px;
-    text-align: center;
-    font-size: 0.9rem;
-}
-.switch-link a {
-    color: var(--primary);
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: underline;
-}
-.switch-link a:hover {
-    color: var(--accent);
-}
-
-/* ============================================================
-   FORMULÁRIOS
-   ============================================================ */
-.form-box {
-    background: white;
-    border-radius: var(--radius);
-    padding: 25px 30px;
-    margin: 30px 0;
-    border: 1px solid var(--border-card);
-}
-.form-box h2 {
-    margin-bottom: 18px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    align-items: flex-end;
-}
-.form-group {
-    flex: 1 1 180px;
-}
-.form-group label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 4px;
-}
-.form-group input, .form-group textarea, .form-group select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-    transition: 0.15s;
-    background: #f8fafc;
-}
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-    border-color: var(--accent);
-    outline: none;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(250,204,21,0.2);
-}
-.form-group textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-.form-group input[type="file"] {
-    padding: 8px;
-    background: white;
-}
-.admin-fee-info {
-    background: #f1f5f9;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    color: #475569;
-    margin-top: 5px;
-}
-
-/* ============================================================
-   GAMES
-   ============================================================ */
-.game-box {
-    background: white;
-    border-radius: var(--radius);
-    padding: 25px 30px;
-    margin: 20px 0;
-    border: 1px solid var(--border-card);
-    text-align: center;
-}
-.game-box .game-area {
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: var(--radius-sm);
-    min-height: 150px;
-}
-.game-box .game-btn {
-    padding: 12px 30px;
-    background: var(--accent);
-    color: var(--text-dark);
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    margin: 10px;
-    transition: 0.2s;
-}
-.game-box .game-btn:hover {
-    transform: scale(1.05);
-    background: var(--accent-hover);
-}
-.game-box .game-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-.game-box .reward-display {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent);
-    margin: 10px 0;
-}
-.slot-machine {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    font-size: 3rem;
-    padding: 20px;
-    background: var(--primary);
-    border-radius: var(--radius-sm);
-    margin: 10px 0;
-    min-height: 100px;
-    align-items: center;
-}
-.slot-machine .slot {
-    background: #1e293b;
-    padding: 15px 25px;
-    border-radius: 8px;
-    color: var(--accent);
-    min-width: 70px;
-    text-align: center;
-}
-.slot-machine .slot.spinning {
-    animation: spin 0.1s linear infinite;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-.daily-bonus {
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    padding: 15px;
-    border-radius: var(--radius-sm);
-    margin: 10px 0;
-}
-.daily-bonus h4 {
-    color: var(--text-dark);
-    margin-bottom: 5px;
-}
-
-/* ============================================================
-   AVALIAÇÃO DE PREÇO
-   ============================================================ */
-.price-evaluation {
-    background: white;
-    border-radius: var(--radius);
-    padding: 25px 30px;
-    margin: 30px 0;
-    border: 1px solid var(--border-card);
-}
-.price-evaluation h2 {
-    margin-bottom: 18px;
-    font-weight: 600;
-}
-.price-evaluation .eval-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-.price-evaluation .eval-item {
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-card);
-    text-align: center;
-}
-.price-evaluation .eval-item .product-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 5px;
-}
-.price-evaluation .eval-item .product-price {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: white;
-    background: var(--primary);
-    padding: 2px 12px;
-    border-radius: var(--radius-sm);
-    display: inline-block;
-    margin-top: 5px;
-}
-.price-evaluation .eval-item .product-condition {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-.price-evaluation .eval-item .eval-range {
-    font-size: 0.8rem;
-    color: #475569;
-}
-
-/* ============================================================
-   NOTIFICAÇÕES
-   ============================================================ */
-.notifications-panel {
-    background: white;
-    border-radius: var(--radius);
-    padding: 25px 30px;
-    margin: 20px 0;
-    border: 1px solid var(--border-card);
-    display: none;
-}
-.notifications-panel.active {
-    display: block;
-}
-.notifications-panel h2 {
-    margin-bottom: 15px;
-}
-.notification-item {
-    padding: 15px;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.notification-item:last-child {
-    border-bottom: none;
-}
-.notification-item .notif-text {
-    flex: 1;
-}
-.notification-item .notif-date {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin-left: 15px;
-}
-.notification-item .btn-aceitar {
-    background: #22c55e;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.8rem;
-}
-.notification-item .btn-recusar {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.8rem;
-}
-.notification-item .btn-chat-notif {
-    background: #8b5cf6;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.8rem;
-}
-.notification-item .btn-chat-notif:hover {
-    background: #7c3aed;
-}
-
-/* ============================================================
-   MODAIS (produto e chat)
-   ============================================================ */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-.modal.active {
-    display: flex;
-}
-.modal-content {
-    background: white;
-    border-radius: 24px;
-    max-width: 700px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 35px;
-    position: relative;
-}
-.modal-close {
-    position: sticky;
-    top: 0;
-    float: right;
-    background: #ef4444;
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-.modal-close:hover {
-    background: #dc2626;
-    transform: rotate(90deg);
-}
-.modal .product-image-full {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    background: #f1f5f9;
-    margin: 15px 0;
-}
-.modal .product-gallery {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 10px 0;
-}
-.modal .product-gallery img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid #e2e8f0;
-    transition: 0.2s;
-}
-.modal .product-gallery img:hover {
-    border-color: var(--accent);
-    transform: scale(1.05);
-}
-.modal .product-detail {
-    margin: 15px 0;
-}
-.modal .product-detail .label {
-    font-weight: 600;
-    color: #475569;
-    font-size: 0.85rem;
-}
-.modal .product-detail .value {
-    color: var(--text-dark);
-    margin-bottom: 10px;
-}
-.modal .actions-modal {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-.modal .actions-modal button {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    min-width: 120px;
-}
-
-.chat-modal .modal-content {
-    max-width: 500px;
-}
-.chat-messages {
-    max-height: 400px;
-    overflow-y: auto;
-    margin: 15px 0;
-    padding: 10px;
-    background: #f8fafc;
-    border-radius: var(--radius-sm);
-}
-.chat-message {
-    padding: 10px 15px;
-    margin: 5px 0;
-    border-radius: var(--radius-sm);
-    max-width: 80%;
-}
-.chat-message.me {
-    background: var(--primary);
-    color: white;
-    margin-left: auto;
-}
-.chat-message.other {
-    background: #e2e8f0;
-    color: var(--text-dark);
-}
-.chat-message .msg-date {
-    font-size: 0.7rem;
-    opacity: 0.7;
-    display: block;
-    margin-top: 4px;
-}
-.chat-input-area {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-.chat-input-area input {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-}
-.chat-input-area button {
-    padding: 12px 25px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    cursor: pointer;
-}
-.chat-input-area button:hover {
-    background: var(--primary-hover);
-}
-
-/* ============================================================
-   TOAST
-   ============================================================ */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--primary);
-    color: white;
-    padding: 14px 28px;
-    border-radius: 60px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    font-weight: 500;
-    display: none;
-    z-index: 999;
-    border-left: 6px solid var(--accent);
-    max-width: 90%;
-}
-.toast.show {
-    display: block;
-    animation: fadeInUp 0.3s ease;
-}
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-/* ============================================================
-   RODAPÉ
-   ============================================================ */
-.footer-notes {
-    margin-top: 40px;
-    font-size: 0.8rem;
-    color: #94a3b8;
-    text-align: center;
-    border-top: 1px solid var(--border-card);
-    padding-top: 25px;
-}
-
-/* ============================================================
-   ADMIN
-   ============================================================ */
-.admin-stats {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-.admin-stats > div {
-    background: #f8fafc;
-    padding: 15px 25px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-card);
-}
-.admin-stats strong {
-    font-size: 1.5rem;
-    color: var(--primary);
-}
-.admin-stats div div {
-    color: var(--text-muted);
-}
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-.admin-table th {
-    background: #f8fafc;
-    padding: 10px;
-    text-align: left;
-}
-.admin-table td {
-    padding: 8px;
-}
-
-/* ============================================================
-   RESPONSIVIDADE
-   ============================================================ */
-@media (max-width: 600px) {
-    .header-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .search-bar {
-        width: 100%;
-    }
-    .user-info {
-        justify-content: center;
-    }
-    .filters-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .filters-row select,
-    .filters-row input {
-        width: 100%;
-    }
-    .cards-grid {
-        grid-template-columns: 1fr;
-    }
-    .auth-box {
-        padding: 25px;
-        margin: 10px;
-    }
-    .modal-content {
-        padding: 20px;
-        margin: 10px;
-    }
-    .slot-machine {
-        font-size: 2rem;
-        gap: 10px;
-    }
-    .slot-machine .slot {
-        padding: 10px 15px;
-        min-width: 50px;
-    }
-    .price-evaluation .eval-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-/* ============================================================
-   MODAL DE LOGIN / CADASTRO (corrigido e compacto)
    ============================================================ */
 .auth-container {
     display: none;
@@ -1283,77 +589,405 @@ header {
     display: none !important;
 }
 
-/* ===== ABAS NA HEADER ===== */
-.tab-btn-header {
-    padding: 6px 14px;
-    background: transparent;
-    border: none;
-    border-radius: 30px;
+/* ============================================================
+   FORMULÁRIOS
+   ============================================================ */
+.form-box {
+    background: white;
+    border-radius: var(--radius);
+    padding: 25px 30px;
+    margin: 30px 0;
+    border: 1px solid var(--border-card);
+}
+.form-box h2 {
+    margin-bottom: 18px;
     font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: 0.2s;
-    color: rgba(255,255,255,0.7);
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.tab-btn-header:hover {
-    color: white;
-    background: rgba(255,255,255,0.15);
-}
-.tab-btn-header.active {
-    color: var(--text-dark, #0f172a);
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.tab-btn-header.active:hover {
-    background: white;
-}
-
-/* Ajuste no filtros-row para acomodar as abas */
-.filters-row {
+.form-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255,255,255,0.15);
-    align-items: center;
+    gap: 15px;
+    align-items: flex-end;
 }
-.filters-row select,
-.filters-row input {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 30px;
-    font-size: 0.85rem;
-    background: rgba(255,255,255,0.2);
-    color: white;
+.form-group {
+    flex: 1 1 180px;
+}
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 4px;
+}
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: 0.15s;
+    background: #f8fafc;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: var(--accent);
     outline: none;
-    flex: 0 1 auto;
-    min-width: 100px;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(250,204,21,0.2);
 }
-.filters-row select option {
-    color: var(--text-dark, #0f172a);
+.form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+.form-group input[type="file"] {
+    padding: 8px;
     background: white;
 }
-.filters-row input::placeholder {
-    color: rgba(255,255,255,0.6);
-}
-.filters-row select:focus,
-.filters-row input:focus {
-    background: rgba(255,255,255,0.3);
+.admin-fee-info {
+    background: #f1f5f9;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #475569;
+    margin-top: 5px;
 }
 
-/* ===== NOVO BOTÃO "NOVO ANÚNCIO" NO HEADER ===== */
-.btn-new-ad {
+/* ============================================================
+   TROCAS
+   ============================================================ */
+.trocas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.troca-item {
+    background: white;
+    border-radius: var(--radius-sm, 12px);
+    padding: 20px;
+    border: 1px solid var(--border-card, #e2e8f0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.troca-item .troca-info {
+    flex: 1;
+}
+
+.troca-item .troca-info .produto-nome {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.troca-item .troca-info .troca-status {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.troca-status-pendente { background: #fef3c7; color: #92400e; }
+.troca-status-aceita { background: #dbeafe; color: #1e40af; }
+.troca-status-entregue { background: #d1fae5; color: #065f46; }
+.troca-status-recebido { background: #a7f3d0; color: #065f46; }
+.troca-status-concluida { background: #22c55e; color: white; }
+.troca-status-cancelada { background: #fee2e2; color: #991b1b; }
+
+.troca-item .troca-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.troca-item .troca-actions button {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+
+.btn-aceitar-troca { background: #22c55e; color: white; }
+.btn-aceitar-troca:hover { background: #16a34a; }
+
+.btn-recusar-troca { background: #ef4444; color: white; }
+.btn-recusar-troca:hover { background: #dc2626; }
+
+.btn-entregar { background: #3b82f6; color: white; }
+.btn-entregar:hover { background: #2563eb; }
+
+.btn-receber { background: #8b5cf6; color: white; }
+.btn-receber:hover { background: #7c3aed; }
+
+.btn-avaliar { background: var(--accent, #facc15); color: var(--text-dark, #0f172a); }
+.btn-avaliar:hover { background: var(--accent-hover, #eab308); }
+
+/* ============================================================
+   AVALIAÇÕES
+   ============================================================ */
+.avaliacoes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.avaliacao-item {
+    background: #f8fafc;
+    border-radius: var(--radius-sm, 12px);
+    padding: 20px;
+    border: 1px solid var(--border-card, #e2e8f0);
+}
+
+.avaliacao-item .stars {
+    font-size: 1.2rem;
+    color: var(--accent, #facc15);
+}
+
+.avaliacao-item .avaliacao-comentario {
+    margin-top: 10px;
+    color: #334155;
+}
+
+.avaliacao-item .avaliacao-data {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 10px;
+}
+
+/* ============================================================
+   INDICAÇÃO
+   ============================================================ */
+.indicacao-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.indicacao-card {
+    background: #f8fafc;
+    border-radius: var(--radius-sm, 12px);
+    padding: 20px;
+    border: 1px solid var(--border-card, #e2e8f0);
+}
+
+.indicacao-card h3 {
+    margin-bottom: 15px;
+    color: var(--text-dark, #0f172a);
+}
+
+.codigo-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent, #facc15);
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px dashed #cbd5e1;
+    margin-bottom: 15px;
+    letter-spacing: 4px;
+    font-family: monospace;
+}
+
+/* ============================================================
+   NOTIFICAÇÕES
+   ============================================================ */
+.notifications-panel {
+    background: white;
+    border-radius: var(--radius);
+    padding: 25px 30px;
+    margin: 20px 0;
+    border: 1px solid var(--border-card);
+    display: none;
+}
+.notifications-panel.active {
+    display: block;
+}
+.notifications-panel h2 {
+    margin-bottom: 15px;
+}
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+.notification-item .notif-text {
+    flex: 1;
+}
+.notification-item .notif-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-left: 15px;
+}
+.notification-item .btn-aceitar {
     background: #22c55e;
     color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
 }
-.btn-new-ad:hover {
-    background: #16a34a;
-    transform: translateY(-2px);
+.notification-item .btn-recusar {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.notification-item .btn-chat-notif {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.notification-item .btn-chat-notif:hover {
+    background: #7c3aed;
 }
 
-/* ===== LISTA DE CHATS ===== */
+/* ============================================================
+   MODAIS
+   ============================================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 35px;
+    position: relative;
+}
+.modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.modal-close:hover {
+    background: #dc2626;
+    transform: rotate(90deg);
+}
+.modal .product-image-full {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: #f1f5f9;
+    margin: 15px 0;
+}
+
+.chat-modal .modal-content {
+    max-width: 500px;
+}
+.chat-messages {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 15px 0;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+}
+.chat-message {
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: var(--radius-sm);
+    max-width: 80%;
+}
+.chat-message.me {
+    background: var(--primary);
+    color: white;
+    margin-left: auto;
+}
+.chat-message.other {
+    background: #e2e8f0;
+    color: var(--text-dark);
+}
+.chat-message .msg-date {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    display: block;
+    margin-top: 4px;
+}
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+.chat-input-area input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+}
+.chat-input-area button {
+    padding: 12px 25px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+.chat-input-area button:hover {
+    background: var(--primary-hover);
+}
+
+/* ============================================================
+   CHAT LIST
+   ============================================================ */
 .chat-list-item {
     display: flex;
     align-items: center;
@@ -1402,4 +1036,310 @@ header {
     font-size: 3rem;
     display: block;
     margin-bottom: 10px;
+}
+
+/* ============================================================
+   PRODUCT DETAIL PAGE
+   ============================================================ */
+.product-detail-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-card);
+}
+
+.product-detail-page .gallery .image-container {
+    width: 100%;
+    height: 400px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.product-detail-page .gallery .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.product-detail-page .gallery .thumbnails {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.product-detail-page .gallery .thumbnails img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    transition: 0.2s;
+}
+.product-detail-page .gallery .thumbnails img:hover {
+    border-color: var(--accent, #facc15);
+    transform: scale(1.05);
+}
+
+.product-detail-page .info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.product-detail-page .info h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark, #0f172a);
+    margin-bottom: 5px;
+}
+.product-detail-page .info .price-coins {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+    background: #f1f5f9;
+    padding: 4px 14px;
+    border-radius: 30px;
+    display: inline-block;
+    align-self: flex-start;
+}
+.product-detail-page .info .price-coins strong {
+    color: var(--accent, #facc15);
+    font-size: 1.2rem;
+}
+.product-detail-page .info .trade-wanted {
+    background: linear-gradient(135deg, #f1f1f1, #f1f1f1);
+    border: 2px solid #000000;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+.product-detail-page .info .trade-wanted .text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.product-detail-page .info .trade-wanted .text span {
+    color: #0c0c0c;
+    font-weight: 700;
+}
+.product-detail-page .info .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 5px 0;
+}
+.product-detail-page .info .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 30px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+.product-detail-page .info .meta-item {
+    display: flex;
+    flex-direction: column;
+}
+.product-detail-page .info .meta-item .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 600;
+}
+.product-detail-page .info .meta-item .value {
+    font-weight: 600;
+    color: var(--text-dark, #0f172a);
+}
+.product-detail-page .info .description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre-wrap;
+}
+.product-detail-page .info .description strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-dark, #0f172a);
+}
+.product-detail-page .info .actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.product-detail-page .info .actions button {
+    padding: 14px 30px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    flex: 1;
+    min-width: 150px;
+}
+.btn-buy {
+    background: var(--accent, #facc15);
+    color: var(--text-dark, #0f172a);
+}
+.btn-buy:hover {
+    background: var(--accent-hover, #eab308);
+    transform: translateY(-2px);
+}
+.btn-chat {
+    background: #8b5cf6;
+    color: white;
+}
+.btn-chat:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+.btn-back {
+    background: #e2e8f0;
+    color: var(--text-dark, #0f172a);
+}
+.btn-back:hover {
+    background: #cbd5e1;
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+.admin-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.admin-stats > div {
+    background: #f8fafc;
+    padding: 15px 25px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-card);
+}
+.admin-stats strong {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+.admin-stats div div {
+    color: var(--text-muted);
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.admin-table th {
+    background: #f8fafc;
+    padding: 10px;
+    text-align: left;
+}
+.admin-table td {
+    padding: 8px;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--primary);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 60px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    font-weight: 500;
+    display: none;
+    z-index: 999;
+    border-left: 6px solid var(--accent);
+    max-width: 90%;
+}
+.toast.show {
+    display: block;
+    animation: fadeInUp 0.3s ease;
+}
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+.footer-notes {
+    margin-top: 40px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+    border-top: 1px solid var(--border-card);
+    padding-top: 25px;
+}
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+@media (max-width: 768px) {
+    .header-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-bar {
+        width: 100%;
+    }
+    .user-info {
+        justify-content: center;
+    }
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filters-row select,
+    .filters-row input {
+        width: 100%;
+    }
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    .auth-box {
+        padding: 25px;
+        margin: 10px;
+    }
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+    .product-detail-page {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    .product-detail-page .gallery .image-container {
+        height: 250px;
+    }
+    .product-detail-page .info h1 {
+        font-size: 1.5rem;
+    }
+    .indicacao-area {
+        grid-template-columns: 1fr;
+    }
+    .troca-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .troca-item .troca-actions {
+        justify-content: center;
+    }
+    .avaliacoes-list {
+        grid-template-columns: 1fr;
+    }
 }

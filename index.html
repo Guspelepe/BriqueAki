@@ -53,12 +53,13 @@
                 </select>
                 <input type="text" id="searchCidade" placeholder="Cidade..." />
                 
-                <!-- ABAS NA HEADER (sem emojis) -->
+                <!-- ABAS NA HEADER -->
                 <button class="tab-btn-header active" data-tab="tabAnuncios">Anúncios</button>
                 <button class="tab-btn-header" data-tab="tabMeusAnuncios">Meus Anúncios</button>
                 <button class="tab-btn-header" data-tab="tabNovoAnuncio">Novo Anúncio</button>
-                <button class="tab-btn-header" data-tab="tabGames">Ganhar Moedas</button>
-                <button class="tab-btn-header" data-tab="tabAvaliacao">Avaliação</button>
+                <button class="tab-btn-header" data-tab="tabMinhasTrocas">Minhas Trocas</button>
+                <button class="tab-btn-header" data-tab="tabAvaliacao">Avaliações</button>
+                <button class="tab-btn-header" data-tab="tabIndicacao">Indicar</button>
                 <button class="tab-btn-header" data-tab="tabChats">Chat</button>
                 <button class="tab-btn-header" data-tab="tabAdmin" id="tabAdminBtn" style="display:none;">Admin</button>
             </div>
@@ -71,8 +72,8 @@
         <div class="auth-container hidden" id="authModal">
             <div class="auth-box" id="loginBox">
                 <button class="modal-close" onclick="fecharAuthModal()">✕</button>
-                <h2>Digite seu e-mail ou telefone para iniciar sessão</h2>
-                <div id="loginError" class="error-msg"> Credenciais inválidas</div>
+                <h2>Digite seu e-mail ou telefone</h2>
+                <div id="loginError" class="error-msg">Credenciais inválidas</div>
                 <div class="form-group">
                     <label>E-mail ou telefone</label>
                     <input type="text" id="loginEmail" placeholder="seu@email.com" value="demo@trocatudo.com" />
@@ -131,6 +132,11 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Código de indicação <span style="color:#94a3b8;font-weight:400;">(opcional)</span></label>
+                    <input type="text" id="regCodigoIndicacao" placeholder="Digite o código de um amigo" />
+                    <small style="color:#94a3b8;">Deixe em branco se não tiver um código</small>
+                </div>
+                <div class="form-group">
                     <label>Senha *</label>
                     <input type="password" id="regSenha" placeholder="Min. 6 caracteres" />
                 </div>
@@ -148,17 +154,18 @@
         <div class="tab-content active" id="tabAnuncios">
             <div id="listaAnuncios" class="cards-grid"></div>
         </div>
+        
         <div class="tab-content" id="tabMeusAnuncios">
             <div id="meusAnuncios" class="cards-grid"></div>
         </div>
+        
         <div class="tab-content" id="tabNovoAnuncio">
             <div class="form-box">
                 <h2>Publicar novo anúncio</h2>
-                <!-- ... formulário ... -->
                 <div class="form-row">
                     <div class="form-group" style="flex: 2;">
-                        <label>Título do produto *</label>
-                        <input type="text" id="tituloProduto" placeholder="Ex: Camiseta vintage" />
+                        <label>Título do produto/serviço *</label>
+                        <input type="text" id="tituloProduto" placeholder="Ex: Fone Bluetooth" />
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Categoria *</label>
@@ -173,13 +180,14 @@
                             <option value="Colecionáveis">Colecionáveis</option>
                             <option value="Brinquedos">Brinquedos</option>
                             <option value="Acessórios">Acessórios</option>
+                            <option value="Serviços">Serviços</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex: 2;">
                         <label>Descrição *</label>
-                        <textarea id="descricaoProduto" placeholder="Descreva seu produto..."></textarea>
+                        <textarea id="descricaoProduto" placeholder="Descreva seu produto ou serviço..."></textarea>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Local *</label>
@@ -200,6 +208,14 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label>Tipo de troca *</label>
+                        <select id="tipoTrocaProduto">
+                            <option value="produto">Produto por Produto</option>
+                            <option value="servico">Produto por Serviço</option>
+                            <option value="ambos">Produto por Produto ou Serviço</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Condição do produto *</label>
                         <select id="condicaoProduto">
                             <option value="novo">Novo</option>
@@ -209,12 +225,12 @@
                             <option value="ruim">Usado - precisa de reparos</option>
                         </select>
                     </div>
-                    <div class="form-group" style="flex: 2;">
-                        <label>O que você deseja em troca?</label>
-                        <input type="text" id="trocaDesejada" placeholder="Ex: Livros, roupas..." />
-                    </div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>O que você deseja em troca?</label>
+                        <input type="text" id="trocaDesejada" placeholder="Ex: Livros, roupas, serviço de design..." />
+                    </div>
                     <div class="form-group">
                         <label>Status do produto</label>
                         <select id="statusProduto">
@@ -224,71 +240,70 @@
                             <option value="cancelado">Cancelado</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group" style="flex: 0 0 200px;">
                         <label>&nbsp;</label>
                         <button class="btn" id="btnPublicar" style="width:100%; background:#0f172a; color:white; padding:12px;">Publicar</button>
                     </div>
                 </div>
                 <div class="admin-fee-info">
-                     Ao vender, você recebe o valor em moedas - 15% de taxa administrativa
+                    💰 Ao vender, você recebe o valor em moedas - 15% de taxa administrativa
                 </div>
             </div>
         </div>
-        <div class="tab-content" id="tabGames">
-            <!-- ... games ... -->
-            <div class="game-box">
-                <h3>Caça-Níquel</h3>
-                <p>Gire e ganhe moedas! Cada giro custa 5 moedas.</p>
-                <div class="game-area">
-                    <div class="slot-machine" id="slotMachine">
-                        <div class="slot" id="slot1">🍒</div>
-                        <div class="slot" id="slot2">🍒</div>
-                        <div class="slot" id="slot3">🍒</div>
-                    </div>
-                    <button class="game-btn" id="btnGirar">🎰 Girar (5🪙)</button>
-                    <div class="reward-display" id="slotReward">💰 0</div>
-                </div>
-            </div>
-            <div class="game-box">
-                <h3>Bônus Diário</h3>
-                <p>Colete seu bônus diário de moedas!</p>
-                <div class="game-area">
-                    <div class="daily-bonus" id="dailyBonusArea">
-                        <h4>Bônus Diário</h4>
-                        <div id="dailyBonusStatus">Clique no botão abaixo para coletar</div>
-                        <button class="game-btn" id="btnDailyBonus"> Coletar Bônus</button>
-                    </div>
-                </div>
-            </div>
-            <div class="game-box">
-                <h3>Minhas Moedas</h3>
-                <div class="game-area">
-                    <div style="font-size:2rem;font-weight:700;color:#facc15;" id="coinBalanceDisplay">0</div>
-                    <div style="color:#64748b;font-size:0.9rem;">
-                        <p> Total de moedas já ganhas: <span id="totalCoinsEarned">0</span></p>
-                        <p> Taxa administrativa total paga: <span id="totalFeesPaid">0</span></p>
-                    </div>
-                </div>
+
+        <div class="tab-content" id="tabMinhasTrocas">
+            <div class="form-box">
+                <h2>Minhas Trocas</h2>
+                <div id="minhasTrocasList" class="trocas-list"></div>
             </div>
         </div>
+
         <div class="tab-content" id="tabAvaliacao">
-            <!-- ... avaliação ... -->
             <div class="price-evaluation">
-                <h2>Avaliação de Preço por Condição</h2>
-                <p style="color:#64748b;margin-bottom:20px;">Com base na condição dos produtos anunciados, o sistema calcula uma média de preço para cada condição.</p>
-                <div id="priceEvaluationGrid" class="eval-grid"></div>
-            </div>
-            <div class="price-evaluation">
-                <h2>Preço Médio por Categoria</h2>
-                <div id="categoryEvaluationGrid" class="eval-grid"></div>
+                <h2>⭐ Avaliações</h2>
+                <div id="avaliacoesList" class="avaliacoes-list"></div>
             </div>
         </div>
+
+        <div class="tab-content" id="tabIndicacao">
+            <div class="form-box">
+                <h2>🌟 Sistema de Indicação</h2>
+                <div class="indicacao-area">
+                    <div class="indicacao-card">
+                        <h3>Seu código de indicação</h3>
+                        <div class="codigo-display" id="meuCodigoIndicacao">Carregando...</div>
+                        <button class="btn" onclick="copiarCodigo()">📋 Copiar código</button>
+                        <p style="margin-top:10px;color:#64748b;">Compartilhe seu código com amigos! Quando eles se cadastrarem e fizerem uma troca, você ganha 20 moedas de bônus!</p>
+                    </div>
+                    <div class="indicacao-card">
+                        <h3>Usar código de indicação</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="flex:3;">
+                                <input type="text" id="inputUsarCodigo" placeholder="Digite o código de um amigo" />
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <button class="btn" id="btnUsarCodigo" style="background:#0f172a;color:white;">Usar</button>
+                            </div>
+                        </div>
+                        <div id="indicacaoStatus" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="indicacao-card">
+                        <h3>Pessoas que você indicou</h3>
+                        <div id="indicadosList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="tab-content" id="tabChats">
             <div class="form-box">
                 <h2>Minhas Conversas</h2>
                 <div id="chatListContainer"><p style="color:#94a3b8;text-align:center;padding:20px;">Carregando conversas...</p></div>
             </div>
         </div>
+
         <div class="tab-content" id="tabAdmin">
             <div class="form-box">
                 <h2>Painel Administrativo</h2>
@@ -297,6 +312,7 @@
                     <div><strong id="adminTotalProducts">0</strong><div>Produtos</div></div>
                     <div><strong id="adminTotalCoins">0</strong><div>Moedas em circulação</div></div>
                     <div><strong id="adminTotalFees">0</strong><div>Taxas arrecadadas</div></div>
+                    <div><strong id="adminTotalTrocas">0</strong><div>Trocas realizadas</div></div>
                 </div>
                 <h3 style="margin:20px 0 10px;">Todos os Produtos</h3>
                 <div style="overflow-x:auto;">
@@ -315,7 +331,7 @@
         </div>
 
         <div class="footer-notes">
-            💡 Trocas com moedas • 15% de taxa administrativa • Ganhe moedas nos minijogos
+            💡 Trocas com moedas • 15% de taxa administrativa • Indique amigos e ganhe bônus
         </div>
     </div>
 
@@ -326,6 +342,7 @@
             <div id="modalBody"></div>
         </div>
     </div>
+
     <div class="modal chat-modal" id="chatModal">
         <div class="modal-content">
             <button class="modal-close" onclick="fecharChat()">✕</button>
@@ -334,6 +351,42 @@
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
                 <button onclick="enviarMensagem()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Avaliação -->
+    <div class="modal" id="avaliacaoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharAvaliacaoModal()">✕</button>
+            <h2>⭐ Avaliar Troca</h2>
+            <div id="avaliacaoBody">
+                <p>Avalie o produto e o vendedor</p>
+                <div class="form-group">
+                    <label>Nota para o produto (1-5)</label>
+                    <select id="notaProduto">
+                        <option value="5">⭐⭐⭐⭐⭐ - Excelente</option>
+                        <option value="4">⭐⭐⭐⭐ - Bom</option>
+                        <option value="3">⭐⭐⭐ - Regular</option>
+                        <option value="2">⭐⭐ - Ruim</option>
+                        <option value="1">⭐ - Péssimo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nota para o vendedor (1-5)</label>
+                    <select id="notaVendedor">
+                        <option value="5">⭐⭐⭐⭐⭐ - Excelente</option>
+                        <option value="4">⭐⭐⭐⭐ - Bom</option>
+                        <option value="3">⭐⭐⭐ - Regular</option>
+                        <option value="2">⭐⭐ - Ruim</option>
+                        <option value="1">⭐ - Péssimo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Comentário</label>
+                    <textarea id="comentarioAvaliacao" placeholder="Descreva sua experiência..."></textarea>
+                </div>
+                <button class="btn-primary" id="btnEnviarAvaliacao" style="width:100%;">Enviar Avaliação</button>
             </div>
         </div>
     </div>
