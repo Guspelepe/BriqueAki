@@ -13,7 +13,7 @@
             <div class="header-row">
                 <div class="logo-area">
                     <a href="index.html">
-                        <img src="logo.png" alt="TrocaTudo" id="logo" />
+                        <img src="src/logo.png" alt="TrocaTudo" id="logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%2260%22%3E%3Crect width=%22200%22 height=%2260%22 fill=%22%23a4d8fa%22 rx=%2210%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22sans-serif%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%230f172a%22%3E🔄 TrocaTudo%3C/text%3E%3C/svg%3E'" />
                     </a>
                 </div>
                 
@@ -31,7 +31,7 @@
                     <button class="btn btn-logout" id="btnLogout">Sair</button>
                 </div>
                 <div class="user-info" id="userInfoLoggedOut">
-                    <button class="btn btn-new-ad" onclick="window.location.href='index.html?tab=novoAnuncio'">Novo Anúncio</button>
+                    <button class="btn btn-new-ad" onclick="showTab('novoAnuncio')">Novo Anúncio</button>
                     <button class="btn btn-login" onclick="abrirAuthModal('login')">Entrar</button>
                     <button class="btn btn-register" onclick="abrirAuthModal('register')">Cadastrar</button>
                 </div>
@@ -39,6 +39,9 @@
 
             <!-- Filtros + ABAS na header -->
             <div class="filters-row">
+                <button class="btn-localizar" id="btnLocalizar">
+                    📍 Ativar Localização
+                </button>
                 <select id="searchEstado">
                     <option value="">Região</option>
                     <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
@@ -52,23 +55,31 @@
                     <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                 </select>
                 <input type="text" id="searchCidade" placeholder="Cidade..." />
+                <select id="searchRaio">
+                    <option value="0">Qualquer distância</option>
+                    <option value="10">Até 10 km</option>
+                    <option value="50">Até 50 km</option>
+                    <option value="100">Até 100 km</option>
+                    <option value="300">Até 300 km</option>
+                    <option value="1000">Até 1000 km</option>
+                </select>
                 
                 <!-- ABAS NA HEADER -->
-                <button class="tab-btn-header active" data-tab="tabAnuncios">Anúncios</button>
-                <button class="tab-btn-header" data-tab="tabMeusAnuncios">Meus Anúncios</button>
-                <button class="tab-btn-header" data-tab="tabNovoAnuncio">Novo Anúncio</button>
-                <button class="tab-btn-header" data-tab="tabMinhasTrocas">Minhas Trocas</button>
-                <button class="tab-btn-header" data-tab="tabAvaliacao">Avaliações</button>
-                <button class="tab-btn-header" data-tab="tabIndicacao">Indicar</button>
-                <button class="tab-btn-header" data-tab="tabChats">Chat</button>
-                <button class="tab-btn-header" data-tab="tabAdmin" id="tabAdminBtn" style="display:none;">Admin</button>
+                <button class="tab-btn-header active" data-tab="anuncios" onclick="showTab('anuncios')">Anúncios</button>
+                <button class="tab-btn-header" data-tab="meusAnuncios" onclick="showTab('meusAnuncios')">Meus Anúncios</button>
+                <button class="tab-btn-header" data-tab="novoAnuncio" onclick="showTab('novoAnuncio')">Novo Anúncio</button>
+                <button class="tab-btn-header" data-tab="minhasTrocas" onclick="showTab('minhasTrocas')">Minhas Trocas</button>
+                <button class="tab-btn-header" data-tab="avaliacao" onclick="showTab('avaliacao')">Avaliações</button>
+                <button class="tab-btn-header" data-tab="indicacao" onclick="showTab('indicacao')">Indicar</button>
+                <button class="tab-btn-header" data-tab="chats" onclick="showTab('chats')">Chat</button>
+                <button class="tab-btn-header" data-tab="admin" id="tabAdminBtn" style="display:none;" onclick="showTab('admin')">Admin</button>
             </div>
         </div>
     </header>
 
     <!-- ===== CONTEÚDO PRINCIPAL ===== -->
     <div class="container">
-        <!-- MODAL DE LOGIN / CADASTRO -->
+        <!-- MODAL DE LOGIN / CADASTRO (começa escondido) -->
         <div class="auth-container hidden" id="authModal">
             <div class="auth-box" id="loginBox">
                 <button class="modal-close" onclick="fecharAuthModal()">✕</button>
@@ -87,7 +98,9 @@
                     <a onclick="abrirAuthModal('register')">Criar conta</a>
                 </div>
                 <div style="margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0; text-align:center; font-size:0.8rem; color:#94a3b8;">
-                    Admin: adm@adm.com / 123456
+                    Admin: adm@adm.com / 123456<br />
+                    Demo: demo@trocatudo.com / 123456<br />
+                    Demo 2: demo2@trocatudo.com / 123456
                 </div>
             </div>
 
@@ -151,15 +164,15 @@
         <div class="categories-bar" id="categoriesBar"></div>
 
         <!-- ===== TAB CONTENTS ===== -->
-        <div class="tab-content active" id="tabAnuncios">
+        <div class="tab-content active" id="tab-anuncios">
             <div id="listaAnuncios" class="cards-grid"></div>
         </div>
         
-        <div class="tab-content" id="tabMeusAnuncios">
+        <div class="tab-content" id="tab-meusAnuncios">
             <div id="meusAnuncios" class="cards-grid"></div>
         </div>
         
-        <div class="tab-content" id="tabNovoAnuncio">
+        <div class="tab-content" id="tab-novoAnuncio">
             <div class="form-box">
                 <h2>Publicar novo anúncio</h2>
                 <div class="form-row">
@@ -253,21 +266,21 @@
             </div>
         </div>
 
-        <div class="tab-content" id="tabMinhasTrocas">
+        <div class="tab-content" id="tab-minhasTrocas">
             <div class="form-box">
                 <h2>Minhas Trocas</h2>
                 <div id="minhasTrocasList" class="trocas-list"></div>
             </div>
         </div>
 
-        <div class="tab-content" id="tabAvaliacao">
+        <div class="tab-content" id="tab-avaliacao">
             <div class="price-evaluation">
                 <h2>⭐ Avaliações</h2>
                 <div id="avaliacoesList" class="avaliacoes-list"></div>
             </div>
         </div>
 
-        <div class="tab-content" id="tabIndicacao">
+        <div class="tab-content" id="tab-indicacao">
             <div class="form-box">
                 <h2>🌟 Sistema de Indicação</h2>
                 <div class="indicacao-area">
@@ -297,14 +310,14 @@
             </div>
         </div>
 
-        <div class="tab-content" id="tabChats">
+        <div class="tab-content" id="tab-chats">
             <div class="form-box">
                 <h2>Minhas Conversas</h2>
                 <div id="chatListContainer"><p style="color:#94a3b8;text-align:center;padding:20px;">Carregando conversas...</p></div>
             </div>
         </div>
 
-        <div class="tab-content" id="tabAdmin">
+        <div class="tab-content" id="tab-admin">
             <div class="form-box">
                 <h2>Painel Administrativo</h2>
                 <div class="admin-stats">
@@ -348,6 +361,10 @@
             <button class="modal-close" onclick="fecharChat()">✕</button>
             <h2 id="chatTitle">Conversa</h2>
             <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-local-input">
+                <input type="text" id="chatLocalInput" placeholder="Sugerir local de entrega... ex: Praça Central" />
+                <button onclick="combinarLocal()">📍 Sugerir Local</button>
+            </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
                 <button onclick="enviarMensagem()">Enviar</button>
@@ -383,8 +400,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Comentário</label>
-                    <textarea id="comentarioAvaliacao" placeholder="Descreva sua experiência..."></textarea>
+                    <label>Comentário (opcional)</label>
+                    <textarea id="comentarioAvaliacao" placeholder="Descreva sua experiência com a troca e o site..."></textarea>
                 </div>
                 <button class="btn-primary" id="btnEnviarAvaliacao" style="width:100%;">Enviar Avaliação</button>
             </div>
@@ -393,13 +410,6 @@
 
     <div id="toast" class="toast">✅ Ação concluída</div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "dexie": "https://unpkg.com/dexie@3/dist/dexie.mjs"
-            }
-        }
-    </script>
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
