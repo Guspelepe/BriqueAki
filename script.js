@@ -494,8 +494,40 @@ function renderNotificacoes() {
     });
 }
 
-function toggleNotifications() { if (!currentUser) { showToast('Faça login para ver notificações.'); return; } const notificationsPanel = document.getElementById('notificationsPanel'); if (!notificationsPanel) return; notificationsPanel.classList.toggle('active'); if (notificationsPanel.classList.contains('active')) { renderNotificacoes(); db.notificacoes.toArray().then(notifs => { const updated = notifs.map(n => n.para === currentUser.email ? {...n, lida: true} : n); db.notificacoes.bulkPut(updated).then(() => atualizarBadge()); }); } }
+function toggleNotifications() {
+    if (!currentUser) { showToast('Faça login para ver notificações.'); return; }
+    const panel = document.getElementById('notificationsPanel');
+    const overlay = document.getElementById('notificationsOverlay');
+    if (!panel || !overlay) return;
 
+    // Alterna a classe 'open' no painel e 'active' no overlay
+    panel.classList.toggle('open');
+    overlay.classList.toggle('active');
+
+    if (panel.classList.contains('open')) {
+        renderNotificacoes();
+        // Marcar notificações como lidas
+        db.notificacoes.toArray().then(notifs => {
+            const updated = notifs.map(n => n.para === currentUser.email ? {...n, lida: true} : n);
+            db.notificacoes.bulkPut(updated).then(() => atualizarBadge());
+        });
+    }
+}
+
+function fecharNotificacoes() {
+    const panel = document.getElementById('notificationsPanel');
+    const overlay = document.getElementById('notificationsOverlay');
+    if (panel) panel.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+}
+
+// Função para fechar o painel (chamada pelo overlay e pelo botão X)
+function fecharNotificacoes() {
+    const panel = document.getElementById('notificationsPanel');
+    const overlay = document.getElementById('notificationsOverlay');
+    if (panel) panel.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+}
 // ============================================================
 // PUBLICAR ANÚNCIO
 // ============================================================
@@ -512,8 +544,38 @@ async function publicarAnuncio() {
 // ============================================================
 // NAVEGAÇÃO COM ABAS
 // ============================================================
+// ============================================================
+// NAVEGAÇÃO COM ABAS
+// ============================================================
 function showTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.tab-btn-header').forEach(el => el.classList.remove('active')); const target = document.getElementById(`tab-${tabName}`); if (target) target.classList.add('active'); document.querySelectorAll('.tab-btn-header').forEach(btn => { if (btn.dataset.tab === tabName) btn.classList.add('active'); }); if (tabName === 'meusAnuncios') renderMeusAnuncios(); if (tabName === 'admin') renderAdminPanel(); if (tabName === 'minhasTrocas') renderMinhasTrocas(); if (tabName === 'avaliacao') renderAvaliacoes(); if (tabName === 'chats') renderChats(); if (tabName === 'indicacao') atualizarIndicacao();
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn-header').forEach(el => el.classList.remove('active'));
+
+    const target = document.getElementById(`tab-${tabName}`);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.tab-btn-header').forEach(btn => {
+        if (btn.dataset.tab === tabName) btn.classList.add('active');
+    });
+
+    // ===== CONTROLE DE VISIBILIDADE DOS FILTROS E CATEGORIAS =====
+    const filtersRow = document.getElementById('filtersRow');
+    const categoriesBar = document.getElementById('categoriesBar');
+    if (tabName === 'anuncios') {
+        if (filtersRow) filtersRow.classList.remove('hidden');
+        if (categoriesBar) categoriesBar.style.display = 'flex';
+    } else {
+        if (filtersRow) filtersRow.classList.add('hidden');
+        if (categoriesBar) categoriesBar.style.display = 'none';
+    }
+
+    // Renderizar conteúdo específico
+    if (tabName === 'meusAnuncios') renderMeusAnuncios();
+    if (tabName === 'admin') renderAdminPanel();
+    if (tabName === 'minhasTrocas') renderMinhasTrocas();
+    if (tabName === 'avaliacao') renderAvaliacoes();
+    if (tabName === 'chats') renderChats();
+    if (tabName === 'indicacao') atualizarIndicacao();
 }
 
 // ============================================================
