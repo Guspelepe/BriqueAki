@@ -63,6 +63,7 @@
                     <option value="300">Até 300 km</option>
                     <option value="1000">Até 1000 km</option>
                 </select>
+                <button class="btn-localizar" style="background:#ef4444; color:white;" onclick="limparFiltros()">🗑️ Limpar Filtros</button>
                 
                 <!-- ABAS NA HEADER -->
                 <button class="tab-btn-header active" data-tab="anuncios" onclick="showTab('anuncios')">Anúncios</button>
@@ -409,7 +410,9 @@
     </div>
 
     <div id="toast" class="toast">✅ Ação concluída</div>
-
-    <script src="script.js"></script>
+    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+    <script src="db.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>   
 </body>
 </html>
