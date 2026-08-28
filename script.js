@@ -1,4 +1,4 @@
-// script.js - 100% com IndexedDB (db.js)
+// script.js - COMPLETO e integrado ao IndexedDB (db.js)
 
 // ===== VARIÁVEIS GLOBAIS =====
 let currentUser = null;
@@ -117,6 +117,7 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 
 const CAPITAIS_UF = { 'AC': { lat: -9.9750, lng: -67.8243 }, 'AL': { lat: -9.6498, lng: -35.7089 }, 'AP': { lat: 0.0349, lng: -51.0694 }, 'AM': { lat: -3.1190, lng: -60.0217 }, 'BA': { lat: -12.9777, lng: -38.5016 }, 'CE': { lat: -3.7172, lng: -38.5433 }, 'DF': { lat: -15.7939, lng: -47.8828 }, 'ES': { lat: -20.3155, lng: -40.3128 }, 'GO': { lat: -16.6869, lng: -49.2648 }, 'MA': { lat: -2.5307, lng: -44.3068 }, 'MT': { lat: -15.6014, lng: -56.0979 }, 'MS': { lat: -20.4697, lng: -54.6201 }, 'MG': { lat: -19.9167, lng: -43.9345 }, 'PA': { lat: -1.4558, lng: -48.4902 }, 'PB': { lat: -7.1195, lng: -34.8450 }, 'PR': { lat: -25.4284, lng: -49.2733 }, 'PE': { lat: -8.0476, lng: -34.8770 }, 'PI': { lat: -5.0892, lng: -42.8019 }, 'RJ': { lat: -22.9068, lng: -43.1729 }, 'RN': { lat: -5.7945, lng: -35.2110 }, 'RS': { lat: -30.0346, lng: -51.2177 }, 'RO': { lat: -8.7619, lng: -63.9039 }, 'RR': { lat: 2.8235, lng: -60.6758 }, 'SC': { lat: -27.5954, lng: -48.5480 }, 'SP': { lat: -23.5505, lng: -46.6333 }, 'SE': { lat: -10.9472, lng: -37.0731 }, 'TO': { lat: -10.1689, lng: -48.3317 } };
 const CIDADES_COORDS = { 'sao paulo': { lat: -23.5505, lng: -46.6333 }, 'rio de janeiro': { lat: -22.9068, lng: -43.1729 }, 'belo horizonte': { lat: -19.9167, lng: -43.9345 }, 'curitiba': { lat: -25.4284, lng: -49.2733 } };
+
 function removerAcentos(texto) { return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
 function obterCoordenadasProduto(produto) {
     if (produto.lat && produto.lng) return { lat: produto.lat, lng: produto.lng };
@@ -152,7 +153,16 @@ window.limparLocalStorage = function() {
 // CARREGAR DADOS DO INDEXEDDB
 // ============================================================
 async function loadProducts() {
-    allProducts = await db.produtos.toArray();
+    try {
+        if (typeof db !== 'undefined') {
+            allProducts = await db.produtos.toArray();
+        } else {
+            allProducts = [];
+            console.error('Erro: Banco de dados "db" não encontrado. Verifique se o db.js foi carregado.');
+        }
+    } catch (e) {
+        console.error('Erro ao carregar produtos do IndexedDB:', e);
+    }
     return allProducts;
 }
 
