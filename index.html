@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BriqueAki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -28,6 +31,9 @@
                     <button class="btn btn-notification" id="btnNotifications">
                         🔔 <span class="badge" id="notifBadge">0</span>
                     </button>
+                    <button class="btn btn-chat-toggle" id="btnChatToggle">
+                        💬 <span class="badge" id="chatBadge">0</span>
+                    </button>
                     <button class="btn btn-logout" id="btnLogout">Sair</button>
                 </div>
                 <div class="user-info" id="userInfoLoggedOut">
@@ -37,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- ===== FILTROS (só aparecem na aba Anúncios) ===== -->
+            <!-- ===== FILTROS ===== -->
             <div class="filters-row" id="filtersRow">
                 <button class="btn-localizar" id="btnLocalizar">📍 Ativar Localização</button>
                 <select id="searchEstado">
@@ -63,15 +69,16 @@
                 </select>
             </div>
 
-            <!-- ===== ABAS (sempre visíveis) ===== -->
+            <!-- ===== ABAS ===== -->
             <div class="tabs-row">
                 <button class="tab-btn-header active" data-tab="anuncios" onclick="showTab('anuncios')">Anúncios</button>
                 <button class="tab-btn-header" data-tab="meusAnuncios" onclick="showTab('meusAnuncios')">Meus Anúncios</button>
                 <button class="tab-btn-header" data-tab="novoAnuncio" onclick="showTab('novoAnuncio')">Novo Anúncio</button>
-                <button class="tab-btn-header" data-tab="minhasTrocas" onclick="showTab('minhasTrocas')">Minhas Trocas</button>
+                <button class="tab-btn-header" data-tab="minhasTrocas" onclick="showTab('minhasTrocas')">
+                    Minhas Trocas <span class="tab-badge" id="trocasBadge" style="display:none;">0</span>
+                </button>
                 <button class="tab-btn-header" data-tab="avaliacao" onclick="showTab('avaliacao')">Avaliações</button>
                 <button class="tab-btn-header" data-tab="indicacao" onclick="showTab('indicacao')">Indicar</button>
-                <button class="tab-btn-header" data-tab="chats" onclick="showTab('chats')">Chat</button>
                 <button class="tab-btn-header" data-tab="admin" id="tabAdminBtn" style="display:none;" onclick="showTab('admin')">Admin</button>
             </div>
         </div>
@@ -100,7 +107,6 @@
                 <div style="margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0; text-align:center; font-size:0.8rem; color:#94a3b8;">
                     Admin: adm@adm.com / 123456<br />
                     Demo: demo@trocatudo.com / 123456<br />
-                    Demo 2: demo2@trocatudo.com / 123456
                 </div>
             </div>
 
@@ -108,7 +114,7 @@
                 <button class="modal-close" onclick="fecharAuthModal()">✕</button>
                 <h2>Criar conta</h2>
                 <p class="subtitle">Preencha seus dados para começar</p>
-                <div id="registerError" class="error-msg">Preencha todos os campos corretamente</div>
+                <div id="registerError" class="error-msg">❌ Preencha todos os campos corretamente</div>
                 <div class="form-group">
                     <label>Nome completo *</label>
                     <input type="text" id="regNome" placeholder="Maria Silva" />
@@ -160,7 +166,7 @@
             </div>
         </div>
 
-        <!-- BARRA DE CATEGORIAS (só aparece na aba Anúncios) -->
+        <!-- BARRA DE CATEGORIAS -->
         <div class="categories-bar" id="categoriesBar"></div>
 
         <!-- ===== TAB CONTENTS ===== -->
@@ -261,7 +267,7 @@
                     </div>
                 </div>
                 <div class="admin-fee-info">
-                    Ao vender, você recebe o valor em moedas - 15% de taxa administrativa
+                    💰 Ao vender, você recebe o valor em moedas - 15% de taxa administrativa
                 </div>
             </div>
         </div>
@@ -287,7 +293,7 @@
                     <div class="indicacao-card">
                         <h3>Seu código de indicação</h3>
                         <div class="codigo-display" id="meuCodigoIndicacao">Carregando...</div>
-                        <button class="btn" onclick="copiarCodigo()">Copiar código</button>
+                        <button class="btn" onclick="copiarCodigo()">📋 Copiar código</button>
                         <p style="margin-top:10px;color:#64748b;">Compartilhe seu código com amigos! Quando eles se cadastrarem e fizerem uma troca, você ganha 20 moedas de bônus!</p>
                     </div>
                     <div class="indicacao-card">
@@ -310,13 +316,6 @@
             </div>
         </div>
 
-        <div class="tab-content" id="tab-chats">
-            <div class="form-box">
-                <h2>Minhas Conversas</h2>
-                <div id="chatListContainer"><p style="color:#94a3b8;text-align:center;padding:20px;">Carregando conversas...</p></div>
-            </div>
-        </div>
-
         <div class="tab-content" id="tab-admin">
             <div class="form-box">
                 <h2>Painel Administrativo</h2>
@@ -334,6 +333,7 @@
                         <tbody id="adminProductList"></tbody>
                     </table>
                 </div>
+                <div id="historicoContainer" class="historico-container"></div>
             </div>
         </div>
 
@@ -347,36 +347,49 @@
             <div id="notificationsList"></div>
         </div>
 
+        <!-- ===== CHAT - PAINEL LATERAL ===== -->
+        <div class="chat-overlay" id="chatOverlay"></div>
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <h2>💬 Conversas</h2>
+                <button class="btn-close-chat" onclick="fecharChatPanel()">✕</button>
+            </div>
+            <div class="chat-panel-body">
+                <div class="chat-list" id="chatListContainer">
+                    <p style="color:#94a3b8;text-align:center;padding:20px;">Carregando conversas...</p>
+                </div>
+                <div class="chat-conversation" id="chatConversation" style="display:none;">
+                    <div class="chat-conversation-header" id="chatConvHeader">
+                        <span id="chatConvTitle">Conversa</span>
+                        <button class="btn-back-chat" onclick="voltarParaListaChat()">← Voltar</button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <!-- ===== BOTÕES DE AÇÃO NO CHAT ===== -->
+                    <div class="chat-actions" id="chatActions" style="display:flex; gap:8px; padding:8px 15px; background:#f1f5f9; flex-wrap:wrap;">
+                        <button class="btn-action-chat" id="btnSolicitarTroca" style="background:#8b5cf6; color:white; border:none; padding:6px 16px; border-radius:20px; cursor:pointer; font-weight:600; font-size:0.8rem;">🔄 Solicitar Troca</button>
+                        <button class="btn-action-chat" id="btnSolicitarCompra" style="background:#22c55e; color:white; border:none; padding:6px 16px; border-radius:20px; cursor:pointer; font-weight:600; font-size:0.8rem;">💰 Comprar com Moedas</button>
+                    </div>
+                    <div class="chat-local-input">
+                        <input type="text" id="chatLocalInput" placeholder="Sugerir local de entrega..." />
+                        <button onclick="combinarLocal()">📍</button>
+                    </div>
+                    <div class="chat-input-area">
+                        <button class="btn-attach" onclick="document.getElementById('chatFileInput').click()">📎</button>
+                        <input type="file" id="chatFileInput" accept="image/*" style="display:none;" />
+                        <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
+                        <button onclick="enviarMensagem()">Enviar</button>
+                    </div>
+                    <div id="chatTrocaInfo" style="font-size:0.8rem;color:#94a3b8;padding:5px;text-align:center;"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="footer-notes">
             💡 Trocas com moedas • 15% de taxa administrativa • Indique amigos e ganhe bônus
         </div>
     </div>
 
-    <!-- ===== MODAIS ===== -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="fecharModal()">✕</button>
-            <div id="modalBody"></div>
-        </div>
-    </div>
-
-    <div class="modal chat-modal" id="chatModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="fecharChat()">✕</button>
-            <h2 id="chatTitle">Conversa</h2>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-local-input">
-                <input type="text" id="chatLocalInput" placeholder="Sugerir local de entrega... ex: Praça Central" />
-                <button onclick="combinarLocal()">📍 Sugerir Local</button>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
-                <button onclick="enviarMensagem()">Enviar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Avaliação -->
+    <!-- ===== MODAL DE AVALIAÇÃO ===== -->
     <div class="modal" id="avaliacaoModal">
         <div class="modal-content">
             <button class="modal-close" onclick="fecharAvaliacaoModal()">✕</button>
@@ -412,7 +425,7 @@
         </div>
     </div>
 
-    <div id="toast" class="toast">Ação concluída</div>
+    <div id="toast" class="toast">✅ Ação concluída</div>
 
     <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
     <script src="db.js"></script>

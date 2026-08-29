@@ -1,10 +1,10 @@
 // db.js - Configuração do Dexie (IndexedDB) via CDN
 const db = new Dexie('TrocaTudoDB');
 
-db.version(3).stores({
+db.version(4).stores({
     usuarios: '++id, email, cpf, nome, codigoIndicacao, indicadoPor',
     produtos: '++id, titulo, categoria, status, dono, precoMoedas, tipoTroca, lat, lng',
-    trocas: '++id, produtoId, solicitante, dono, status, tipo, servicoDescricao, mensagem, dataEntrega, dataRecebimento, avaliado, localCombinado',
+    trocas: '++id, produtoId, solicitante, dono, status, tipo, servicoDescricao, mensagem, dataEntrega, dataRecebimento, avaliado, localCombinado, *eventos',
     notificacoes: '++id, para, de, lida, tipo',
     chats: '++id, produtoId, usuario1, usuario2, localCombinado, localAceito',
     adminFees: '++id',
@@ -15,8 +15,7 @@ db.version(3).stores({
 const usuariosIniciais = [
     { id: 1, nome: 'Administrador', cpf: '000.000.000-00', email: 'adm@adm.com', telefone: '(00) 00000-0000', cidade: 'Admin', estado: 'AD', senha: '123456', isAdmin: true, moedas: 99999, totalGanho: 0, totalTaxas: 0, codigoIndicacao: 'ADMIN2024', indicadoPor: null },
     { id: 2, nome: 'Usuário Demo', cpf: '123.456.789-00', email: 'demo@trocatudo.com', telefone: '(11) 99999-9999', cidade: 'São Paulo', estado: 'SP', senha: '123456', isAdmin: false, moedas: 0, totalGanho: 0, totalTaxas: 0, codigoIndicacao: 'DEMO123', indicadoPor: null },
-    { id: 3, nome: 'Usuário Demo 2', cpf: '987.654.321-00', email: 'demo2@trocatudo.com', telefone: '(21) 98888-8888', cidade: 'Rio de Janeiro', estado: 'RJ', senha: '123456', isAdmin: false, moedas: 0, totalGanho: 0, totalTaxas: 0, codigoIndicacao: 'DEMO456', indicadoPor: null }
-];
+]
 
 const produtosIniciais = [
     // ========== SERVIÇOS INICIAIS ==========
@@ -146,7 +145,12 @@ const produtosIniciais = [
     { id: 106, titulo: 'Boné Aba Reta Preto', descricao: 'Boné tamanho ajustável, liso sem estampa.', categoria: 'Acessórios', local: 'Recife/PE', dono: 'joao.v@email.com', fotos: [], trocaDesejada: 'Touca/Gorro de inverno', status: 'disponivel', condicao: 'novo', precoMoedas: 35, tipoTroca: 'produto', data: new Date().toISOString(), vendido: false },
     { id: 107, titulo: 'Bolsa Transversal Esportiva', descricao: 'Pochete/shoulder bag para guardar celular e chaves.', categoria: 'Acessórios', local: 'Brasília/DF', dono: 'demo@trocatudo.com', fotos: [], trocaDesejada: 'Garrafa térmica pequena', status: 'disponivel', condicao: 'seminovo', precoMoedas: 40, tipoTroca: 'produto', data: new Date().toISOString(), vendido: false },
     { id: 108, titulo: 'Cinto Reversível Preto/Marrom', descricao: 'Fivela giratória, tamanho 100cm.', categoria: 'Acessórios', local: 'Fortaleza/CE', dono: 'maria.s@email.com', fotos: [], trocaDesejada: 'Gravata ou suspensório', status: 'disponivel', condicao: 'novo', precoMoedas: 50, tipoTroca: 'produto', data: new Date().toISOString(), vendido: false },
-    { id: 109, titulo: 'Guarda-chuva Reforçado', descricao: 'Tamanho grande (portaria), estrutura dupla de vento.', categoria: 'Acessórios', local: 'Manaus/AM', dono: 'pedro@email.com', fotos: [], trocaDesejada: 'Capa de chuva impermeável', status: 'disponivel', condicao: 'seminovo', precoMoedas: 60, tipoTroca: 'produto', data: new Date().toISOString(), vendido: false }
+    { id: 109, titulo: 'Guarda-chuva Reforçado', descricao: 'Tamanho grande (portaria), estrutura dupla de vento.', categoria: 'Acessórios', local: 'Manaus/AM', dono: 'pedro@email.com', fotos: [], trocaDesejada: 'Capa de chuva impermeável', status: 'disponivel', condicao: 'seminovo', precoMoedas: 60, tipoTroca: 'produto', data: new Date().toISOString(), vendido: false },
+
+    // ========== SERVIÇOS ADICIONAIS ==========
+    { id: 113, titulo: 'Encanador', descricao: 'Serviço de encanamento residencial e comercial. Reparos em vazamentos, desentupimentos, instalação de torneiras e caixas d\'água.', categoria: 'Serviços', local: 'São Paulo/SP', dono: 'demo@trocatudo.com', fotos: [], trocaDesejada: 'Moedas ou ferramentas', status: 'disponivel', condicao: 'novo', precoMoedas: 100, tipoTroca: 'servico', data: new Date().toISOString(), vendido: false },
+    { id: 114, titulo: 'Pintor', descricao: 'Pintura de interiores e exteriores, acabamento em gesso, textura e papel de parede. Orçamento sem compromisso.', categoria: 'Serviços', local: 'Rio de Janeiro/RJ', dono: 'demo2@trocatudo.com', fotos: [], trocaDesejada: 'Moedas ou materiais de pintura', status: 'disponivel', condicao: 'novo', precoMoedas: 120, tipoTroca: 'servico', data: new Date().toISOString(), vendido: false },
+    { id: 115, titulo: 'Jardinagem', descricao: 'Cuidados com jardins, poda de árvores, plantio de flores, grama e manutenção de paisagismo.', categoria: 'Serviços', local: 'Curitiba/PR', dono: 'demo@trocatudo.com', fotos: [], trocaDesejada: 'Moedas ou ferramentas de jardinagem', status: 'disponivel', condicao: 'novo', precoMoedas: 80, tipoTroca: 'servico', data: new Date().toISOString(), vendido: false }
 ];
 
 async function popularBanco() {
